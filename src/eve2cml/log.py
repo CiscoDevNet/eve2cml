@@ -26,8 +26,7 @@ class ColorFormatter(logging.Formatter):
         return super().format(record)
 
 
-def init(level_str: str):
-
+def initialize_logging(level_str: str):
     # get the root logger
     logger = logging.getLogger()
 
