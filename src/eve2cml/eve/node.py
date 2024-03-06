@@ -2,6 +2,7 @@ from typing import List
 
 from . import Interface
 
+
 class Node:
     def __init__(
         self,
@@ -27,7 +28,7 @@ class Node:
         left="",
         top="",
         e0dhcp="",
-        interfaces: List[Interface]=[],
+        interfaces: List[Interface] = [],
     ):
         self.id = id
         self.name = name
@@ -57,19 +58,23 @@ class Node:
         return f"ID: {self.id}, Name: {self.name}, Type: {self.obj_type}, X: {self.left}, Y: {self.top}, Template: {self.template}, Image: {self.image}, Ethernet: {self.ethernet}"
 
     def as_cml_dict(self, idx, lab):
-        node_definition, override = lab.mapper.node_def(self.obj_type, self.template, self.image)
+        node_definition, override = lab.mapper.node_def(
+            self.obj_type, self.template, self.image
+        )
         iface_count = len(self.interfaces)
         iface_diff = int(self.ethernet) - iface_count
         if iface_diff > 0:
-            for idx in range(iface_diff):
-                self.interfaces.append(Interface(id=str(iface_count+idx), name="doesntmatterhere"))
+            for iface_idx in range(iface_diff):
+                self.interfaces.append(
+                    Interface(id=str(iface_count + iface_idx), name="doesntmatterhere")
+                )
         return {
             "id": f"n{idx}",
-            "bootdisksize": None,
+            "boot_disk_size": None,
             "configuration": lab.objects.get_config(self.config, self.id),
             "cpu_limit": 100 - int(self.cpulimit) if self.cpulimit else None,
             "cpus": int(self.cpu) if (self.cpu and not override) else None,
-            "datavolume": None,
+            "data_volume": None,
             "hide_links": False,
             "label": self.name,
             "node_definition": node_definition,
@@ -78,7 +83,8 @@ class Node:
             "x": int(self.left),
             "y": int(self.top),
             "interfaces": [
-                iface.as_cml_dict(idx, node_definition, lab) for idx, iface in enumerate(self.interfaces)
+                iface.as_cml_dict(idx, node_definition, lab)
+                for idx, iface in enumerate(self.interfaces)
             ],
         }
 

@@ -1,24 +1,23 @@
 import logging
 from typing import Any, Dict, List, Tuple
+
 from .interface import Interface
+from .mapper import Eve2CMLmapper
 from .node import Node
 from .objects import Objects
 from .topology import Topology
-
-from .mapper import Eve2CMLmapper
-
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class CMLlink:
     def __init__(
-            self,
-            from_id,
-            from_slot,
-            to_id,
-            to_slot,
-            label,
+        self,
+        from_id,
+        from_slot,
+        to_id,
+        to_slot,
+        label,
     ):
         self.from_id = from_id
         self.from_slot = from_slot
@@ -31,10 +30,10 @@ class CMLlink:
             "id": f"l{idx}",
             "n1": f"n{self.from_id}",
             "n2": f"n{self.to_id}",
-            "i1": f"n{self.from_slot}",
-            "i2": f"n{self.to_slot}",
+            "i1": f"i{self.from_slot}",
+            "i2": f"i{self.to_slot}",
             "label": self.label,
-            "conditioning": {}
+            "conditioning": {},
         }
 
 
@@ -69,7 +68,7 @@ class Lab:
             "version": "0.1.0",
         }
         result["links"] = self.cml_links()
-        result["annotations"] = {}
+        result["annotations"] = self.cml_annotations()
 
         result["nodes"] = [
             node.as_cml_dict(idx, self) for idx, node in enumerate(self.topology.nodes)
@@ -96,7 +95,7 @@ class Lab:
             if network.obj_type == "bridge":
                 pass
             elif network.obj_type.startswith("nat"):
-                next_node_id = str(int(self.topology.nodes[-1].id)+1)
+                next_node_id = str(int(self.topology.nodes[-1].id) + 1)
                 ext_conn = Node(
                     id=next_node_id,
                     name=network.name,
@@ -104,10 +103,37 @@ class Lab:
                     template="cml_ext_conn",
                     left=network.left,
                     top=network.top,
+                    ethernet="1",
                     interfaces=[Interface(id="0", name="port", network_id=network.id)],
                 )
                 self.topology.nodes.append(ext_conn)
             else:
                 _LOGGER.error("unhandled network type %s", network.obj_type)
-            links.append(self._lookup_bridge_peers(network.id, network.name).as_cml_dict(idx))
+            links.append(
+                self._lookup_bridge_peers(network.id, network.name).as_cml_dict(idx)
+            )
         return links
+
+    def cml_annotations(self) -> List[Dict[str, Any]]:
+        annotations: List[Dict[str, Any]] = []
+        for object in self.objects.textobjects:
+            if object.obj_type == "text" and len(object.strings) > 0:
+                annotation = {
+                    "border_color": "#00000000",
+                    "border_style": "",
+                    "color": "#808080FF",
+                    "rotation": 0,
+                    "text_bold": False,
+                    "text_content": object.strings,
+                    "text_font": "serif",
+                    "text_italic": False,
+                    "text_size": 15,
+                    "text_unit": "pt",
+                    "thickness": 1,
+                    "type": "text",
+                    "x1": object.left,
+                    "y1": object.top,
+                    "z_index": object.zidx,
+                }
+                annotations.append(annotation)
+        return annotations

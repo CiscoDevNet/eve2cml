@@ -44,7 +44,9 @@ def main():
     parser.add_argument("xml_file", help="Path to the XML file")
     parser.add_argument("--json", action="store_true", help="JSON output")
     parser.add_argument("--text", action="store_true", help="text output")
-    parser.add_argument("--all", action="store_true", help="print all objects in text mode")
+    parser.add_argument(
+        "--all", action="store_true", help="print all objects in text mode"
+    )
     args = parser.parse_args()
 
     initialize_logging(args.level)
