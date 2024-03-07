@@ -30,7 +30,7 @@ def initialize_logging(level_str: str):
     # get the root logger
     logger = logging.getLogger()
 
-    # Create logger and set level
+    # Set level
     level = logging._nameToLevel.get(level_str.upper(), logging.INFO)
     logger.setLevel(level)
 

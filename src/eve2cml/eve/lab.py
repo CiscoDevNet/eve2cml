@@ -68,7 +68,7 @@ class Lab:
             "version": "0.1.0",
         }
         result["links"] = self.cml_links()
-        result["annotations"] = self.cml_annotations()
+        result["annotations"] = self.objects.cml_annotations()
 
         result["nodes"] = [
             node.as_cml_dict(idx, self) for idx, node in enumerate(self.topology.nodes)
@@ -89,11 +89,55 @@ class Lab:
             raise RuntimeError
         return CMLlink(*found_ids[0], *found_ids[1], name)
 
+    def _connect_internal_network(
+        self, ums_node_id: str, network_id: str, name: str
+    ) -> List[CMLlink]:
+        found_ids: List[Tuple[int, int]] = []
+        ums_slot = 0
+        for node_idx, node in enumerate(self.topology.nodes):
+            for slot, iface in enumerate(node.interfaces):
+                if iface.network_id == network_id:
+                    found_ids.append((node_idx, slot))
+        return [
+            CMLlink(ums_node_id, ums_slot + idx, *found, name)
+            for idx, found in enumerate(found_ids)
+        ]
+
     def cml_links(self) -> List[Dict[str, Any]]:
         links: List[Dict[str, Any]] = []
+        internal_links_count = 0
         for idx, network in enumerate(self.topology.networks):
             if network.obj_type == "bridge":
-                pass
+                links.append(
+                    self._lookup_bridge_peers(network.id, network.name).as_cml_dict(
+                        idx + internal_links_count
+                    )
+                )
+
+            elif network.obj_type == "internal":
+                next_node_id = str(int(self.topology.nodes[-1].id) + 1)
+                ums_links = self._connect_internal_network(
+                    next_node_id, network.id, network.name
+                )
+
+                ums = Node(
+                    id=next_node_id,
+                    name=network.name,
+                    obj_type="cml_ums",
+                    template="cml_ums",
+                    left=network.left,
+                    top=network.top,
+                    ethernet="8",
+                    interfaces=[
+                        Interface(id=str(idx), name=f"port{idx}", network_id=network.id)
+                        for idx in range(len(ums_links))
+                    ],
+                )
+                self.topology.nodes.append(ums)
+                internal_links_count += len(ums_links)
+                for link in ums_links:
+                    links.append(link.as_cml_dict(idx + internal_links_count))
+
             elif network.obj_type.startswith("nat"):
                 next_node_id = str(int(self.topology.nodes[-1].id) + 1)
                 ext_conn = Node(
@@ -107,33 +151,11 @@ class Lab:
                     interfaces=[Interface(id="0", name="port", network_id=network.id)],
                 )
                 self.topology.nodes.append(ext_conn)
+                links.append(
+                    self._lookup_bridge_peers(network.id, network.name).as_cml_dict(
+                        idx + internal_links_count
+                    )
+                )
             else:
                 _LOGGER.error("unhandled network type %s", network.obj_type)
-            links.append(
-                self._lookup_bridge_peers(network.id, network.name).as_cml_dict(idx)
-            )
         return links
-
-    def cml_annotations(self) -> List[Dict[str, Any]]:
-        annotations: List[Dict[str, Any]] = []
-        for object in self.objects.textobjects:
-            if object.obj_type == "text" and len(object.strings) > 0:
-                annotation = {
-                    "border_color": "#00000000",
-                    "border_style": "",
-                    "color": "#808080FF",
-                    "rotation": 0,
-                    "text_bold": False,
-                    "text_content": object.strings,
-                    "text_font": "serif",
-                    "text_italic": False,
-                    "text_size": 15,
-                    "text_unit": "pt",
-                    "thickness": 1,
-                    "type": "text",
-                    "x1": object.left,
-                    "y1": object.top,
-                    "z_index": object.zidx,
-                }
-                annotations.append(annotation)
-        return annotations

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 
 from .config import Config
 from .configset import ConfigSet
@@ -43,3 +43,11 @@ class Objects:
             ConfigSet.parse(objects, "configsets/configset"),
             TextObject.parse(objects, "textobjects/textobject"),
         )
+
+    def cml_annotations(self) -> List[Dict[str, Any]]:
+        annotations: List[Dict[str, Any]] = []
+        for object in self.textobjects:
+            annotation = object.as_cml_dict()
+            if annotation is not None:
+                annotations.append(annotation)
+        return annotations
