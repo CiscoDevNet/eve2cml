@@ -24,6 +24,16 @@ def parse_xml(xml_file):
     lock = lab.attrib.get("lock")
     sat = lab.attrib.get("sat")
 
+    desc = lab.find(".//description")
+    task = lab.find(".//body")
+
+    description = ""
+    if desc is not None and desc.text:
+        description += f"## Description: \n\n{desc.text}\n"
+    if task is not None and task.text:
+        description += f"## Task: \n\n{task.text}\n"
+    description += "\n\nImported via `eve2cml` converter"
+
     lab = Lab(
         name=lab_name,
         version=lab_version,
@@ -31,6 +41,7 @@ def parse_xml(xml_file):
         countdown=countdown,
         lock=lock,
         sat=sat,
+        description=description,
         topology=Topology(nodes=Node.parse(lab), networks=Network.parse(lab)),
         objects=Objects.parse(lab, ".//objects"),
     )
@@ -39,27 +50,29 @@ def parse_xml(xml_file):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Convert XML data to dictionary")
-    parser.add_argument("--level", default="info", help="log level")
-    parser.add_argument("xml_file", help="Path to the XML file")
-    parser.add_argument("--json", action="store_true", help="JSON output")
-    parser.add_argument("--text", action="store_true", help="text output")
+    parser = argparse.ArgumentParser(
+        description="Convert UNL/XML topologies to CML2 topologies"
+    )
+    parser.add_argument("-l", "--level", default="info", help="log level")
+    parser.add_argument("-j", "--json", action="store_true", help="JSON output")
+    parser.add_argument("-t", "--text", action="store_true", help="text output")
     parser.add_argument(
         "--all", action="store_true", help="print all objects in text mode"
     )
+    parser.add_argument("xml_file", help="Path to the XML file")
     args = parser.parse_args()
 
     initialize_logging(args.level)
     xml_file = args.xml_file
-    _LOGGER.info("parse XML file")
+    _LOGGER.info("Parse XML file")
     lab = parse_xml(xml_file)
     _LOGGER.info("XML file parsed")
 
     if args.all and not args.text:
-        _LOGGER.warn("all is only relevant with text output, ignoring")
+        _LOGGER.warn("--all is only relevant with text output, ignoring")
 
     if args.text and args.json:
-        _LOGGER.error("either Text or JSON, not both")
+        _LOGGER.error("Either Text or JSON, not both")
         return
 
     if args.json:
@@ -80,26 +93,6 @@ def main():
 
         yaml.add_representer(str, yaml_multiline_string_pipe)
 
-        # def str_presenter(dumper, data):
-        #     """configures yaml for dumping multiline strings
-        #     Ref: https://stackoverflow.com/questions/8640959/how-can-i-control-what-scalar-form-pyyaml-uses-for-my-data"""
-        #     if data.count('\n') > 0:  # check for multiline string
-        #         return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-        #     return dumper.represent_scalar('tag:yaml.org,2002:str', data)
-        # # def str_presenter(dumper, data):
-        # #     """configures yaml for dumping multiline strings
-        # #     Ref: https://stackoverflow.com/questions/8640959/how-can-i-control-what-scalar-form-pyyaml-uses-for-my-data"""
-        # #     if len(data.splitlines()) > 1:  # check for multiline string
-        # #         return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-        # #     return dumper.represent_scalar('tag:yaml.org,2002:str', data)
-        #
-        # yaml.add_representer(str, str_presenter)
-        # yaml.representer.SafeRepresenter.add_representer(str, str_presenter) # to use with safe_dum
-
-        # class CorbinDumper(yaml.SafeDumper):
-        #     def increase_indent(self, flow=False, indentless=False):
-        #         return super(CorbinDumper, self).increase_indent(flow, False)
-        # print(yaml.dump(lab.as_cml_dict(), Dumper=CorbinDumper,allow_unicode=True, default_flow_style=False))
         print(yaml.dump(lab.as_cml_dict(), sort_keys=False))
         return
 
@@ -116,12 +109,12 @@ def main():
     print(">>> Networks <<<")
     for network in lab.topology.networks:
         print(network)
-        print()
+    print()
 
-    print(">>> Textobjects <<<")
+    print(">>> Text objects <<<")
     for text_object in lab.objects.textobjects:
         print(text_object)
-        print()
+    print()
 
     if not args.all:
         return
@@ -129,14 +122,14 @@ def main():
     print(">>> Tasks <<<")
     for task in lab.objects.tasks:
         print(task)
-        print()
+    print()
 
     print(">>> Configs <<<")
     for config in lab.objects.configs:
         print(config)
-        print()
+    print()
 
-    print(">>> Configsets <<<")
+    print(">>> Config sets <<<")
     for configset in lab.objects.configsets:
         print(f"Config Set ID: {configset.id}")
         print(f"Config Set Name: {configset.name}")

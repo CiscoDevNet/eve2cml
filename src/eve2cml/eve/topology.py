@@ -11,3 +11,6 @@ class Topology:
 
     def __str__(self):
         return f"Nodes: {self.nodes}, Networks: {self.networks}"
+
+    def next_node_id(self) -> int:
+        return max([node.id for node in self.nodes]) + 1

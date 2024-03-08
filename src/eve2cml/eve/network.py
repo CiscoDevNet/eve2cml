@@ -1,8 +1,9 @@
 from typing import List
+from xml.etree.ElementTree import Element
 
 
 class Network:
-    def __init__(self, id: str, obj_type: str, name: str, top: str, left: str):
+    def __init__(self, id: int, obj_type: str, name: str, top: int, left: int):
         self.id = id
         self.obj_type = obj_type
         self.name = name
@@ -20,15 +21,15 @@ class Network:
         return f"ID: {self.id}, Name: {self.name}, Type: {self.obj_type}"
 
     @classmethod
-    def parse(cls, lab) -> List["Network"]:
+    def parse(cls, lab: Element) -> List["Network"]:
         networks: List[Network] = []
         for network_elem in lab.findall(".//networks/network"):
             network = Network(
-                id=network_elem.attrib.get("id"),
-                obj_type=network_elem.attrib.get("type"),
-                name=network_elem.attrib.get("name"),
-                top=network_elem.attrib.get("top"),
-                left=network_elem.attrib.get("left"),
+                id=int(network_elem.attrib.get("id", 0)),
+                obj_type=network_elem.attrib.get("type", "unknown"),
+                name=network_elem.attrib.get("name", ""),
+                top=int(network_elem.attrib.get("top", 0)),
+                left=int(network_elem.attrib.get("left", 0)),
             )
             networks.append(network)
         return networks

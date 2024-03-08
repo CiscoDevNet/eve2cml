@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+from xml.etree.ElementTree import Element
 
 from .config import Config
 from .configset import ConfigSet
@@ -35,7 +36,7 @@ class Objects:
         return ""
 
     @classmethod
-    def parse(cls, lab, path) -> "Objects":
+    def parse(cls, lab: Element, path: str) -> "Objects":
         objects = lab.findall(path)[0]
         return Objects(
             Task.parse(objects, "tasks/task"),
@@ -47,7 +48,7 @@ class Objects:
     def cml_annotations(self) -> List[Dict[str, Any]]:
         annotations: List[Dict[str, Any]] = []
         for object in self.textobjects:
-            annotation = object.as_cml_dict()
-            if annotation is not None:
+            annotation_list = object.as_cml_annotations()
+            for annotation in annotation_list:
                 annotations.append(annotation)
         return annotations

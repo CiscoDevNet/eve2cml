@@ -1,4 +1,7 @@
 from typing import List
+from xml.etree.ElementTree import Element
+
+from .decode import decode_data
 
 
 class Task:
@@ -9,13 +12,12 @@ class Task:
         self.data = data
 
     def __str__(self):
-        # return f"Task {self.id}, Name: {self.name}, Type: {self.type}, Data: {decode_data(self.data)}"
-        return f"Task {self.id}, Name: {self.name}, Type: {self.obj_type}"
+        return f"Task {self.id}, Name: {self.name}, Type: {self.obj_type}, Data: {decode_data(self.data)}"
+        # return f"Task {self.id}, Name: {self.name}, Type: {self.obj_type}"
 
     @classmethod
-    def parse(cls, lab, path) -> List["Task"]:
+    def parse(cls, lab: Element, path: str) -> List["Task"]:
         tasks: List[Task] = []
-        # for task_elem in lab.findall(".//objects/tasks/task"):
         for task_elem in lab.findall(path):
             task = Task(
                 id=task_elem.attrib.get("id"),

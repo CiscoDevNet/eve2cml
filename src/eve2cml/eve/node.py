@@ -1,32 +1,36 @@
+import logging
 from typing import List
+from xml.etree.ElementTree import Element
 
 from . import Interface
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Node:
     def __init__(
         self,
-        id,
-        name,
+        id: int,
+        name: str,
         obj_type="",
         template="",
         image="",
         console="",
-        cpu="",
-        cpulimit="",
-        ram="",
-        ethernet="",
+        cpu=0,
+        cpulimit=0,
+        ram=0,
+        ethernet=0,
         uuid="",
         firstmac="",
         qemu_options="",
         qemu_version="",
         qemu_arch="",
-        delay="",
-        sat="",
+        delay=0,
+        sat=0,
         icon="",
         config="",
-        left="",
-        top="",
+        left=0,
+        top=0,
         e0dhcp="",
         interfaces: List[Interface] = [],
     ):
@@ -57,19 +61,47 @@ class Node:
     def __str__(self):
         return f"ID: {self.id}, Name: {self.name}, Type: {self.obj_type}, X: {self.left}, Y: {self.top}, Template: {self.template}, Image: {self.image}, Ethernet: {self.ethernet}"
 
-    def as_cml_dict(self, idx, lab):
+    def as_cml_dict(self, node_id, lab):
         node_definition, override = lab.mapper.node_def(
             self.obj_type, self.template, self.image
         )
-        iface_count = len(self.interfaces)
+
+        temp_list: List[Interface] = []
+        prev = 0
+        for idx, iface in enumerate(self.interfaces):
+            delta = iface.slot - prev
+            for idx2 in range(delta):
+                temp_list.append(
+                    Interface(
+                        id=idx + idx2,
+                        obj_type=self.obj_type,
+                        network_id=999999,
+                        name="filler",
+                        slot=idx + idx2,
+                    )
+                )
+            temp_list.append(iface)
+            prev = iface.slot + 1
+
+        iface_count = len(temp_list)
         iface_diff = int(self.ethernet) - iface_count
         if iface_diff > 0:
+            _LOGGER.warning("Filler interfaces needed %s, %s, %d", self.id, self.name, iface_diff)
             for iface_idx in range(iface_diff):
-                self.interfaces.append(
-                    Interface(id=str(iface_count + iface_idx), name="doesntmatterhere")
+                id = iface_count + iface_idx
+                temp_list.append(
+                    Interface(
+                        id=id,
+                        obj_type=self.obj_type,
+                        network_id=999999,
+                        slot=id,
+                        name="doesntmatterhere",
+                    )
                 )
+
+        _LOGGER.info("Serializing %s %s", self.name, self.id)
         return {
-            "id": f"n{idx}",
+            "id": f"n{node_id}",
             "boot_disk_size": None,
             "configuration": lab.objects.get_config(self.config, self.id),
             "cpu_limit": 100 - int(self.cpulimit) if self.cpulimit else None,
@@ -84,38 +116,42 @@ class Node:
             "y": int(self.top),
             "interfaces": [
                 iface.as_cml_dict(idx, node_definition, lab)
-                for idx, iface in enumerate(self.interfaces)
+                for idx, iface in enumerate(temp_list)
             ],
         }
 
     @classmethod
-    def parse(cls, lab) -> List["Node"]:
+    def parse(cls, lab: Element) -> List["Node"]:
         nodes: List[Node] = []
         for node_elem in lab.findall(".//node"):
+            id = int(node_elem.attrib.get("id", 0))
+            obj_type = node_elem.attrib.get("type", "unknown")
             node = Node(
-                id=node_elem.attrib.get("id"),
-                name=node_elem.attrib.get("name"),
-                obj_type=node_elem.attrib.get("type"),
-                template=node_elem.attrib.get("template"),
-                image=node_elem.attrib.get("image"),
-                console=node_elem.attrib.get("console"),
-                cpu=node_elem.attrib.get("cpu"),
-                cpulimit=node_elem.attrib.get("cpulimit"),
-                ram=node_elem.attrib.get("ram"),
-                ethernet=node_elem.attrib.get("ethernet"),
-                uuid=node_elem.attrib.get("uuid"),
-                firstmac=node_elem.attrib.get("firstmac"),
-                qemu_options=node_elem.attrib.get("qemu_options"),
-                qemu_version=node_elem.attrib.get("qemu_version"),
-                qemu_arch=node_elem.attrib.get("qemu_arch"),
-                delay=node_elem.attrib.get("delay"),
-                sat=node_elem.attrib.get("sat"),
-                icon=node_elem.attrib.get("icon"),
-                config=node_elem.attrib.get("config"),
-                left=node_elem.attrib.get("left"),
-                top=node_elem.attrib.get("top"),
-                e0dhcp=node_elem.attrib.get("e0dhcp"),
-                interfaces=Interface.parse(node_elem),
+                id=id,
+                name=node_elem.attrib.get("name", "unknown"),
+                obj_type=obj_type,
+                template=node_elem.attrib.get("template", "unknown"),
+                image=node_elem.attrib.get("image", "unknown"),
+                console=node_elem.attrib.get("console", "unknown"),
+                cpu=int(node_elem.attrib.get("cpu", 0)),
+                cpulimit=int(node_elem.attrib.get("cpulimit", 0)),
+                ram=int(node_elem.attrib.get("ram", 0)),
+                ethernet=int(node_elem.attrib.get("ethernet", 0)),
+                uuid=node_elem.attrib.get("uuid", ""),
+                firstmac=node_elem.attrib.get("firstmac", ""),
+                qemu_options=node_elem.attrib.get("qemu_options", ""),
+                qemu_version=node_elem.attrib.get("qemu_version", ""),
+                qemu_arch=node_elem.attrib.get("qemu_arch", ""),
+                delay=int(node_elem.attrib.get("delay", 0)),
+                sat=int(node_elem.attrib.get("sat", 0)),
+                icon=node_elem.attrib.get("icon", ""),
+                config=node_elem.attrib.get("config", ""),
+                left=int(node_elem.attrib.get("left", 0)),
+                top=int(node_elem.attrib.get("top", 0)),
+                e0dhcp=node_elem.attrib.get("e0dhcp", ""),
+                interfaces=Interface.parse(
+                    id, obj_type, node_elem.findall("interface")
+                ),
             )
             nodes.append(node)
         return nodes

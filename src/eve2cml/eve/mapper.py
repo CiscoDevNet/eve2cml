@@ -9,8 +9,10 @@ _LOGGER = logging.getLogger(__name__)
 class Eve2CMLmapper:
     def __init__(self):
         self._map = {
-            # "iol:iol": ("iol-xe", False),
-            "iol:iol": ("iosv", False),
+            # type:template:image, image is optional
+            # The boolean defines whether values for CPU, RAM, should be
+            # overridden (e.g. set to 0 or Null in the output)
+            "iol:iol": ("iol-xe", False),
             "qemu:csr1000vng": ("csr1000v", False),
             "qemu:nxosv9k": ("nxosv9000", False),
             "qemu:vios": ("iosv", False),
@@ -21,6 +23,9 @@ class Eve2CMLmapper:
         }
         self._unknown_type = "server"
         self._interfacelists = {
+            "external_connector": [
+                "port",
+            ],
             "iol-xe": [
                 "Ethernet0/0",
                 "Ethernet0/1",
@@ -232,12 +237,13 @@ class Eve2CMLmapper:
         if not found:
             found = self._map.get(f"{obj_type}:{template}")
             if not found:
-                _LOGGER.warn("unmapped node type %s %s %s", obj_type, template, image)
+                _LOGGER.warn("Unmapped node type %s %s %s", obj_type, template, image)
                 return (self._unknown_type, True)
         return found
 
     def cml_iface_label(self, slot: int, node_def: str, label: str) -> str:
         interfaces = self._interfacelists.get(node_def)
         if interfaces is None:
+            _LOGGER.warning("No mapping: %s %d", node_def, slot)
             return label
         return interfaces[slot]
