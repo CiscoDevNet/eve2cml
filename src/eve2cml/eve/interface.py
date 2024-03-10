@@ -22,6 +22,8 @@ class Interface:
         self.name = name
         self.obj_type = obj_type
         self.network_id = network_id
+
+        # ignored for the moment
         self.labelpos = labelpos
         self.curviness = curviness
         self.beziercurviness = beziercurviness

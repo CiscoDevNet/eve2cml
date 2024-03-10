@@ -191,10 +191,10 @@ class TextObject:
     def as_cml_annotations(self) -> List[Dict[str, Any]]:
         if self.obj_type == "text":
             if not len(self.strings) > 0:
-                _LOGGER.warn("Not a real text object")
+                _LOGGER.info("Not a real text object, ignoring")
                 return []
 
-            _LOGGER.info("Procssing TEXT, %d", self.id)
+            _LOGGER.info("Procssing ID %d, TEXT", self.id)
             color = color_convert(self.style_summary.get("color", GRAY))
             text_size = self.style_summary.get("font-size", "16px")
             background_color = self.style_summary.get("background-color", "")
@@ -243,7 +243,7 @@ class TextObject:
             return ret_val
 
         elif self.obj_type == "square":
-            _LOGGER.info("Procssing SQUARE")
+            _LOGGER.info("Procssing ID %d, SQUARE", self.id)
             summary = {**self.style_summary, **self._data.div.svg.rect.attrs}  # type: ignore
             return [
                 {
@@ -262,7 +262,7 @@ class TextObject:
             ]
 
         elif self.obj_type == "circle":
-            _LOGGER.info("Procssing CIRCLE")
+            _LOGGER.info("Procssing ID %d, CIRCLE", self.id)
             summary = {**self.style_summary, **self._data.div.svg.ellipse.attrs}  # type: ignore
             rx = float(summary.get("rx", "80"))
             ry = float(summary.get("ry", "80"))

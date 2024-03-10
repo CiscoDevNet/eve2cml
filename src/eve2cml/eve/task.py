@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 from xml.etree.ElementTree import Element
 
 from .decode import decode_data
 
 
 class Task:
-    def __init__(self, id, name, obj_type, data=None):
+    def __init__(self, id: int, name: str, obj_type: str, data: Optional[str] = None):
         self.id = id
         self.name = name
         self.obj_type = obj_type
@@ -20,9 +20,9 @@ class Task:
         tasks: List[Task] = []
         for task_elem in lab.findall(path):
             task = Task(
-                id=task_elem.attrib.get("id"),
-                name=task_elem.attrib.get("name"),
-                obj_type=task_elem.attrib.get("type"),
+                id=int(task_elem.attrib.get("id", 0)),
+                name=task_elem.attrib.get("name", "unknown"),
+                obj_type=task_elem.attrib.get("type", "unknown"),
             )
             data = task_elem.find("data")
             if data is not None and data.text:

@@ -17,6 +17,11 @@ class Eve2CMLmapper:
             "qemu:nxosv9k": ("nxosv9000", False),
             "qemu:vios": ("iosv", False),
             "qemu:viosl2": ("iosvl2", False),
+            "qemu:vtedge": ("cat-sdwan-vedge", False),
+            "qemu:vtbond": ("cat-sdwan-validator", False),
+            "qemu:vtsmart": ("cat-sdwan-controller", False),
+            "qemu:vtmgmt": ("cat-sdwan-manager", False),
+            "qemu:linux": ("ubuntu", False),
             "docker:docker:eve-gui-server:latest": ("desktop", True),
             "cml_ext_conn:cml_ext_conn": ("external_connector", True),
             "cml_ums:cml_ums": ("unmanaged_switch", True),
@@ -25,6 +30,58 @@ class Eve2CMLmapper:
         self._interfacelists = {
             "external_connector": [
                 "port",
+            ],
+            "ubuntu": [
+                "ens2",
+                "ens3",
+                "ens4",
+                "ens5",
+                "ens6",
+                "ens7",
+                "ens8",
+                "ens9",
+            ],
+            "cat-sdwan-manager": [
+                "eth0",
+                "eth1",
+                "eth2",
+                "eth3",
+                "eth4",
+                "eth5",
+                "eth6",
+                "eth7",
+            ],
+            "cat-sdwan-controller": [
+                "eth0",
+                "eth1",
+                "eth2",
+                "eth3",
+                "eth4",
+                "eth5",
+                "eth6",
+                "eth7",
+            ],
+            "cat-sdwan-validator": [
+                "eth0",
+                "ge0/0",
+                "ge0/1",
+                "ge0/2",
+                "ge0/3",
+                "ge0/4",
+                "ge0/5",
+                "ge0/6",
+                "ge0/7",
+            ],
+            "cat-sdwan-vedge": [
+                "eth0",
+                "ge0/0",
+                "ge0/1",
+                "ge0/2",
+                "ge0/3",
+                "ge0/4",
+                "ge0/5",
+                "ge0/6",
+                "ge0/7",
             ],
             "iol-xe": [
                 "Ethernet0/0",
@@ -230,7 +287,7 @@ class Eve2CMLmapper:
         }
 
     def dump(self):
-        yaml.dump(self._map)
+        return yaml.dump(self._map)
 
     def node_def(self, obj_type: str, template: str, image: str) -> Tuple[str, bool]:
         found = self._map.get(f"{obj_type}:{template}:{image}")

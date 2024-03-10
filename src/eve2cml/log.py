@@ -40,7 +40,7 @@ def initialize_logging(level_str: str):
 
     # Create formatter and set to handler
     # formatter = ColorFormatter("%(levelname)s %(message)s")
-    formatter = ColorFormatter("%(levelname)s [%(module)s:%(lineno)d]: %(message)s")
+    formatter = ColorFormatter("%(levelname)s [%(module)s:%(lineno)d] %(message)s")
 
     ch.setFormatter(formatter)
 
@@ -53,3 +53,4 @@ def initialize_logging(level_str: str):
     # logger.warning('Warning message')
     # logger.error('Error message')
     # logger.critical('Critical message')
+

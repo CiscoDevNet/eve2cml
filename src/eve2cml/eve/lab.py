@@ -13,11 +13,11 @@ _LOGGER = logging.getLogger(__name__)
 class CMLlink:
     def __init__(
         self,
-        from_id,
-        from_slot,
-        to_id,
-        to_slot,
-        label,
+        from_id: int,
+        from_slot: int,
+        to_id: int,
+        to_slot: int,
+        label: str,
     ):
         self.from_id = from_id
         self.from_slot = from_slot
@@ -40,15 +40,16 @@ class CMLlink:
 class Lab:
     def __init__(
         self,
-        name,
-        version,
-        scripttimeout,
-        countdown,
-        lock,
-        sat,
-        description,
+        name: str,
+        version: str,
+        scripttimeout: int,
+        countdown: int,
+        lock: bool,
+        sat: int,
+        description: str,
         topology: Topology,
         objects: Objects,
+        filename: str,
     ):
         self.name = name
         self.version = version
@@ -60,6 +61,8 @@ class Lab:
         self.topology = topology
         self.objects = objects
         self.mapper = Eve2CMLmapper()
+        # for conversion, this is the name of the original file
+        self.filename = filename
 
     def as_cml_dict(self):
         result = {}
@@ -205,6 +208,6 @@ class Lab:
                 current_link_id += 1
 
             else:
-                _LOGGER.warning("Unhandled network type %s", network.obj_type)
+                _LOGGER.warning("Unhandled network type %s (%d port(s)) in %s", network.obj_type, num_ifaces, self.filename)
 
         return links

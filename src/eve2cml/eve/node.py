@@ -86,7 +86,12 @@ class Node:
         iface_count = len(temp_list)
         iface_diff = int(self.ethernet) - iface_count
         if iface_diff > 0:
-            _LOGGER.warning("Filler interfaces needed %s, %s, %d", self.id, self.name, iface_diff)
+            _LOGGER.info(
+                "Filler interfaces needed for Node %d/%s, add %d",
+                self.id,
+                self.name,
+                iface_diff,
+            )
             for iface_idx in range(iface_diff):
                 id = iface_count + iface_idx
                 temp_list.append(
