@@ -44,7 +44,9 @@ class Objects:
         if len(objects) == 0:
             return Objects()
         if len(objects) > 1:
-            _LOGGER.warning("more than one object in tree (%d) for %s", len(objects), filename)
+            _LOGGER.warning(
+                "more than one object in tree (%d) for %s", len(objects), filename
+            )
         objects = objects[0]
         return Objects(
             Task.parse(objects, "tasks/task"),

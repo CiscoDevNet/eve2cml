@@ -53,4 +53,3 @@ def initialize_logging(level_str: str):
     # logger.warning('Warning message')
     # logger.error('Error message')
     # logger.critical('Critical message')
-

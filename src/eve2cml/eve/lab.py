@@ -208,6 +208,11 @@ class Lab:
                 current_link_id += 1
 
             else:
-                _LOGGER.warning("Unhandled network type %s (%d port(s)) in %s", network.obj_type, num_ifaces, self.filename)
+                _LOGGER.warning(
+                    "Unhandled network type %s (%d port(s)) in %s",
+                    network.obj_type,
+                    num_ifaces,
+                    self.filename,
+                )
 
         return links

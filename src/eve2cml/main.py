@@ -84,9 +84,11 @@ def dump_as_text(filename: "str|int", lab: Lab, dump_all: bool):
     with open(filename, "w", encoding="utf-8") as out:
         out.write(">>> Nodes <<<\n")
         for node in lab.topology.nodes:
-            out.write(f"{node}")
-            for interface in node.interfaces:
-                out.write(f"\t{interface}")
+            out.write(f"{node}\n")
+            num_ifaces = len(node.interfaces) - 1
+            for idx, interface in enumerate(node.interfaces):
+                bullet = "|--" if idx < num_ifaces else "\\__"
+                out.write(f"  {bullet} {interface}\n")
             out.write("\n")
 
         out.write(">>> Networks <<<\n")
