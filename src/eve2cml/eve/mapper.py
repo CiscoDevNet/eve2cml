@@ -1,5 +1,6 @@
 import json
 import logging
+import sys
 from importlib import resources
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -55,14 +56,18 @@ class Eve2CMLmapper:
 
         map_data = json.loads(resources.read_text(md, "default.json"))
 
-        map_file = Path(filename)
-        if map_file.is_file():
-            with open(map_file, "r") as fh:
-                map_data = json.load(fh)
-            _LOGGER.warning("custom mapper loaded: %s", filename)
-        else:
-            if filename:
-                _LOGGER.warning("mapper provided but not found: %s", filename)
+        if filename:
+            map_file = Path(filename)
+            if map_file.is_file():
+                with open(map_file, "r") as fh:
+                    try:
+                        map_data = json.load(fh)
+                    except json.JSONDecodeError as exc:
+                        _LOGGER.critical("can't decode %s: %s", filename, exc)
+                        sys.exit(1)
+                _LOGGER.warning("custom mapper loaded: %s", filename)
+            else:
+                _LOGGER.error("mapper provided but not found. Using built-in mapper!")
 
         mapper = Eve2CMLmapper()
         mapper.unknown_type = map_data.get("unknown_type", "")

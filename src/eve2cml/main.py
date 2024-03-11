@@ -1,10 +1,9 @@
 import argparse
-import json
 import logging
-import os
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
+from pathlib import Path
 from typing import List
 
 import yaml
@@ -63,10 +62,10 @@ def convert_files(file_or_zip: str, mapper: Eve2CMLmapper) -> List[Lab]:
     if zipfile.is_zipfile(file_or_zip):
         with zipfile.ZipFile(file_or_zip, "r") as zip_file:
             for file_info in zip_file.infolist():
-                dirname = os.path.dirname(file_info.filename)
+                dirname = str(Path(file_info.filename).parent)
                 if dirname.startswith("__MACOSX"):
                     continue
-                filename = os.path.basename(file_info.filename)
+                filename = Path(file_info.filename).name
                 if filename.endswith(".unl"):
                     try:
                         content = zip_file.read(file_info.filename)
@@ -137,7 +136,6 @@ def main():
     )
     parser.add_argument("--dump", action="store_true", help="Dump the mapper as JSON")
     parser.add_argument("--mapper", help="custom mapper JSON file")
-    parser.add_argument("-j", "--json", action="store_true", help="JSON output")
     parser.add_argument("-t", "--text", action="store_true", help="text output")
     parser.add_argument(
         "--all", action="store_true", help="print all objects in text mode"
@@ -157,20 +155,8 @@ def main():
     if args.all and not args.text:
         _LOGGER.warn("--all is only relevant with text output, ignoring")
 
-    if args.text and args.json:
-        _LOGGER.error("Either Text or JSON, not both")
-        return
-
     mapper = Eve2CMLmapper().load(args.mapper)
     labs = convert_files(args.file_or_zip, mapper)
-
-    if args.json:
-        if len(labs) == 1:
-            print(json.dumps(labs[0].as_cml_dict()))
-            return
-        for lab in labs:
-            with open(lab.filename, "w", encoding="utf-8") as cml_file:
-                cml_file.write(json.dumps(lab.as_cml_dict()))
 
     # YAML is the default
     if not args.text:
@@ -189,7 +175,8 @@ def main():
             print(yaml.dump(labs[0].as_cml_dict(), sort_keys=False))
             return
         for lab in labs:
-            with open(lab.filename, "w", encoding="utf-8") as cml_file:
+            cml_filename = Path(lab.filename).with_suffix(".yaml")
+            with open(cml_filename, "w", encoding="utf-8") as cml_file:
                 cml_file.write(yaml.dump(lab.as_cml_dict(), sort_keys=False))
         return
 
@@ -198,9 +185,6 @@ def main():
         dump_as_text(sys.stdout.fileno(), labs[0], args.all)
     else:
         for lab in labs:
-            dump_as_text(lab.filename, lab, args.all)
+            txt_filename = str(Path(lab.filename).with_suffix(".txt"))
+            dump_as_text(txt_filename, lab, args.all)
     return
-
-
-if __name__ == "__main__":
-    main()
