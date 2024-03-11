@@ -32,7 +32,7 @@ class CMLlink:
             "i1": f"i{self.from_slot}",
             "n2": f"n{self.to_id}",
             "i2": f"i{self.to_slot}",
-            "label": self.label,
+            "label": f"{self.label}-{idx}",
             "conditioning": {},
         }
 
@@ -151,7 +151,7 @@ class Lab:
                             Interface(
                                 id=idx,
                                 name=f"port{idx}",
-                                obj_type=obj_type,
+                                obj_type="ethernet",
                                 slot=idx,
                                 network_id=network.id,
                             )
@@ -207,6 +207,67 @@ class Lab:
                     ).as_cml_dict(current_link_id)
                 )
                 current_link_id += 1
+
+            elif network.obj_type.startswith("pnet"):
+                _LOGGER.info("pnet")
+                bridge_number = int(network.obj_type.lstrip("pnet"))
+
+                # insert an external connector
+                next_node_id = self.topology.next_node_id()
+                obj_type = "cml_ext_conn"
+                ext_conn = Node(
+                    id=next_node_id,
+                    name=f"ext-{network.obj_type}-{network.name}",
+                    obj_type=obj_type,
+                    template=obj_type,
+                    left=network.left,
+                    top=network.top - 64,  # move it up a bit
+                    ethernet=1,
+                    interfaces=[
+                        Interface(
+                            id=0,
+                            obj_type="ethernet",
+                            name="port",
+                            network_id=network.id,
+                            slot=0,
+                        )
+                    ],
+                )
+                ext_conn.cml_config = f"bridge{bridge_number}"
+                self.topology.nodes.append(ext_conn)
+                num_ifaces += 1  # account for the ext-conn
+
+                # insert an UMS
+                next_node_id = self.topology.next_node_id()
+                ums_links = self._connect_internal_network(
+                    next_node_id, network.id, network.name
+                )
+                _LOGGER.warn("## %s %d", self.filename, len(ums_links))
+                obj_type = "cml_ums"
+                ums = Node(
+                    id=next_node_id,
+                    name=f"ums-{network.obj_type}-{network.name}",
+                    obj_type=obj_type,
+                    template=obj_type,
+                    left=network.left,
+                    top=network.top,
+                    interfaces=[
+                        Interface(
+                            id=idx,
+                            name=f"port{idx}",
+                            obj_type="ethernet",
+                            slot=idx,
+                            network_id=network.id,
+                        )
+                        for idx in range(num_ifaces)
+                    ],
+                )
+                ums.cml_hide_links = True
+                ums.ethernet = 8 if num_ifaces < 8 else num_ifaces
+                self.topology.nodes.append(ums)
+                for link in ums_links:
+                    links.append(link.as_cml_dict(current_link_id))
+                    current_link_id += 1
 
             else:
                 _LOGGER.warning(

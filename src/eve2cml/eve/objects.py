@@ -44,7 +44,7 @@ class Objects:
         if len(objects) == 0:
             return Objects()
         if len(objects) > 1:
-            _LOGGER.warning(
+            _LOGGER.info(
                 "more than one object in tree (%d) for %s", len(objects), filename
             )
         objects = objects[0]

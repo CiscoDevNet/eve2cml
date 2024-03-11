@@ -61,6 +61,9 @@ class Node:
         self.e0dhcp = e0dhcp
         self.interfaces = interfaces
 
+        self.cml_hide_links = False
+        self.cml_config = ""
+
     def __str__(self):
         return f"ID: {self.id}, Name: {self.name}, Type: {self.obj_type}, X: {self.left}, Y: {self.top}, Template: {self.template}, Image: {self.image}, Ethernet: {self.ethernet}"
 
@@ -105,15 +108,19 @@ class Node:
                     )
                 )
 
+        # If there's no config then use the cml config (which also might be the
+        # empty string)
+        config = lab.objects.get_config(self.config, self.id) or self.cml_config
+
         _LOGGER.info("Serializing %s %s", self.name, self.id)
         return {
             "id": f"n{node_id}",
             "boot_disk_size": None,
-            "configuration": lab.objects.get_config(self.config, self.id),
+            "configuration": config,
             "cpu_limit": 100 - int(self.cpulimit) if self.cpulimit else None,
             "cpus": int(self.cpu) if (self.cpu and not nd_map.override) else None,
             "data_volume": None,
-            "hide_links": False,
+            "hide_links": self.cml_hide_links,
             "label": self.name,
             "node_definition": nd_map.node_def,
             "image_definition": nd_map.image_def,
