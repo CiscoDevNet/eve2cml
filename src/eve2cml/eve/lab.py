@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 from .interface import Interface
 from .mapper import Eve2CMLmapper
+from .network import Network
 from .node import Node
 from .objects import Objects
 from .topology import Topology
@@ -61,9 +62,13 @@ class Lab:
         self.description = description
         self.topology = topology
         self.objects = objects
+
+        # conversion data
         self.mapper = mapper
-        # for conversion, this is the name of the original file
         self.filename = filename
+
+        self._links: List[Dict[str, Any]] = []
+        self._current_link_id = 0
 
     def as_cml_dict(self):
         result = {}
@@ -105,176 +110,122 @@ class Lab:
             for idx, found in enumerate(found_ids)
         ]
 
+    def _insert_ext_conn(self, network: Network, offset=0) -> Node:
+        next_node_id = self.topology.next_node_id()
+        obj_type = "cml_ext_conn"
+        ext_conn = Node(
+            id=next_node_id,
+            name=f"ext-{network.obj_type}-{network.name}",
+            obj_type=obj_type,
+            template=obj_type,
+            left=network.left,
+            top=network.top - offset,
+            ethernet=1,
+            interfaces=[
+                Interface(
+                    id=0,
+                    obj_type=obj_type,
+                    name="port",
+                    network_id=network.id,
+                    slot=0,
+                )
+            ],
+        )
+        self.topology.nodes.append(ext_conn)
+        return ext_conn
+
+    def _insert_ums(self, network: Network, num_ifaces: int):
+
+        _LOGGER.info("ums")
+        next_node_id = self.topology.next_node_id()
+        ums_links = self._connect_internal_network(
+            next_node_id, network.id, network.name
+        )
+
+        obj_type = "cml_ums"
+        ums = Node(
+            id=next_node_id,
+            name=f"ums-{network.obj_type}-{network.name}",
+            obj_type=obj_type,
+            template=obj_type,
+            left=network.left,
+            top=network.top,
+            interfaces=[
+                Interface(
+                    id=idx,
+                    name=f"port{idx}",
+                    obj_type="ethernet",
+                    slot=idx,
+                    network_id=network.id,
+                )
+                for idx in range(num_ifaces)
+            ],
+        )
+        ums.ethernet = 8 if num_ifaces < 8 else num_ifaces
+        self.topology.nodes.append(ums)
+        for link in ums_links:
+            self._links.append(link.as_cml_dict(self._current_link_id))
+            self._current_link_id += 1
+
     def cml_links(self) -> List[Dict[str, Any]]:
-        links: List[Dict[str, Any]] = []
-
-        current_link_id = 0
-
-        # pass one, none-internal networks
         for network in self.topology.networks:
             _LOGGER.info("Processing network %d, %s", network.id, network.name)
             ifcelist = self._network_ifaces(network.id)
             num_ifaces = len(ifcelist)
 
             if network.obj_type == "bridge":
-
                 if num_ifaces == 2:
                     _LOGGER.info("p2p")
                     from_iface = ifcelist[0]
                     to_iface = ifcelist[1]
-                    links.append(
+                    self._links.append(
                         CMLlink(
                             from_iface.node_id,
                             from_iface.slot,
                             to_iface.node_id,
                             to_iface.slot,
                             network.name,
-                        ).as_cml_dict(current_link_id)
+                        ).as_cml_dict(self._current_link_id)
                     )
-                    current_link_id += 1
+                    self._current_link_id += 1
                 elif num_ifaces > 2:
-                    _LOGGER.info("ums")
-                    next_node_id = self.topology.next_node_id()
-                    ums_links = self._connect_internal_network(
-                        next_node_id, network.id, network.name
-                    )
-
-                    obj_type = "cml_ums"
-                    ums = Node(
-                        id=next_node_id,
-                        name=network.name,
-                        obj_type=obj_type,
-                        template=obj_type,
-                        left=network.left,
-                        top=network.top,
-                        interfaces=[
-                            Interface(
-                                id=idx,
-                                name=f"port{idx}",
-                                obj_type="ethernet",
-                                slot=idx,
-                                network_id=network.id,
-                            )
-                            for idx in range(num_ifaces)
-                        ],
-                    )
-                    ums.ethernet = 8 if num_ifaces < 8 else num_ifaces
-                    self.topology.nodes.append(ums)
-                    for link in ums_links:
-                        links.append(link.as_cml_dict(current_link_id))
-                        current_link_id += 1
+                    self._insert_ums(network, num_ifaces)
                 else:
                     _LOGGER.error("Can't deal with bridge with %d ifaces", num_ifaces)
-
-            elif network.obj_type == "internal":
-                _LOGGER.warning("Ignoring internal network %s", network.name)
-                pass
 
             elif network.obj_type.startswith("nat"):
                 _LOGGER.info("nat")
                 if num_ifaces != 1:
                     _LOGGER.error("NAT interface has %d ifaces", num_ifaces)
                     continue
-                next_node_id = self.topology.next_node_id()
-                obj_type = "cml_ext_conn"
-                ext_conn = Node(
-                    id=next_node_id,
-                    name=network.name,
-                    obj_type=obj_type,
-                    template=obj_type,
-                    left=network.left,
-                    top=network.top,
-                    ethernet=1,
-                    interfaces=[
-                        Interface(
-                            id=0,
-                            obj_type=obj_type,
-                            name="port",
-                            network_id=network.id,
-                            slot=0,
-                        )
-                    ],
-                )
-                self.topology.nodes.append(ext_conn)
-                from_iface = ifcelist[0]
-                links.append(
+                ext_conn = self._insert_ext_conn(network)
+                self._links.append(
                     CMLlink(
-                        from_iface.node_id,
-                        from_iface.slot,
+                        ifcelist[0].node_id,
+                        ifcelist[0].slot,
                         ext_conn.id,
                         0,
                         network.name,
-                    ).as_cml_dict(current_link_id)
+                    ).as_cml_dict(self._current_link_id)
                 )
-                current_link_id += 1
+                self._current_link_id += 1
 
             elif network.obj_type.startswith("pnet"):
                 _LOGGER.info("pnet")
                 bridge_number = int(network.obj_type.lstrip("pnet"))
-
-                # insert an external connector
-                next_node_id = self.topology.next_node_id()
-                obj_type = "cml_ext_conn"
-                ext_conn = Node(
-                    id=next_node_id,
-                    name=f"ext-{network.obj_type}-{network.name}",
-                    obj_type=obj_type,
-                    template=obj_type,
-                    left=network.left,
-                    top=network.top - 64,  # move it up a bit
-                    ethernet=1,
-                    interfaces=[
-                        Interface(
-                            id=0,
-                            obj_type="ethernet",
-                            name="port",
-                            network_id=network.id,
-                            slot=0,
-                        )
-                    ],
-                )
+                ext_conn = self._insert_ext_conn(network, 64)
                 ext_conn.cml_config = f"bridge{bridge_number}"
-                self.topology.nodes.append(ext_conn)
-                num_ifaces += 1  # account for the ext-conn
+                self._insert_ums(network, num_ifaces + 1)
 
-                # insert an UMS
-                next_node_id = self.topology.next_node_id()
-                ums_links = self._connect_internal_network(
-                    next_node_id, network.id, network.name
-                )
-                _LOGGER.warn("## %s %d", self.filename, len(ums_links))
-                obj_type = "cml_ums"
-                ums = Node(
-                    id=next_node_id,
-                    name=f"ums-{network.obj_type}-{network.name}",
-                    obj_type=obj_type,
-                    template=obj_type,
-                    left=network.left,
-                    top=network.top,
-                    interfaces=[
-                        Interface(
-                            id=idx,
-                            name=f"port{idx}",
-                            obj_type="ethernet",
-                            slot=idx,
-                            network_id=network.id,
-                        )
-                        for idx in range(num_ifaces)
-                    ],
-                )
-                ums.cml_hide_links = True
-                ums.ethernet = 8 if num_ifaces < 8 else num_ifaces
-                self.topology.nodes.append(ums)
-                for link in ums_links:
-                    links.append(link.as_cml_dict(current_link_id))
-                    current_link_id += 1
+            elif network.obj_type == "internal":
+                _LOGGER.warning("Ignoring internal network %s", network.name)
 
             else:
-                _LOGGER.warning(
+                _LOGGER.error(
                     "Unhandled network type %s (%d port(s)) in %s",
                     network.obj_type,
                     num_ifaces,
                     self.filename,
                 )
 
-        return links
+        return self._links

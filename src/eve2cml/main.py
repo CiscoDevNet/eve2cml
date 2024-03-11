@@ -148,7 +148,7 @@ def main():
         "--all", action="store_true", help="print all objects in text mode"
     )
     parser.add_argument(
-        "file_or_zip", help="Path to either a UNL or  ZIP with UNL file"
+        "file_or_zip", nargs="+", help="Path to either a UNL or  ZIP with UNL file"
     )
     args = parser.parse_args()
 
@@ -156,14 +156,16 @@ def main():
 
     if args.dump:
         _LOGGER.warning("dumping the mapper into %s", args.file_or_zip)
-        Eve2CMLmapper().load().dump(args.file_or_zip)
+        Eve2CMLmapper().load().dump(args.file_or_zip[0])
         return
 
     if args.all and not args.text:
         _LOGGER.warn("--all is only relevant with text output, ignoring")
 
     mapper = Eve2CMLmapper().load(args.mapper)
-    labs = convert_files(args.file_or_zip, mapper)
+    labs: List[Lab] = []
+    for arg in args.file_or_zip:
+        labs.extend(convert_files(arg, mapper))
 
     # YAML is the default
     if not args.text:
