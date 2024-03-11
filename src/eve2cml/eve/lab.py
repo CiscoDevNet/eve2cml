@@ -69,7 +69,7 @@ class Lab:
         result = {}
         result["lab"] = {
             "notes": self.description,
-            "description": "Imported from EVE-NG via eve2cml",
+            "description": f"Imported from {self.filename} via eve2cml converter",
             "title": self.name,
             "version": "0.1.0",
         }

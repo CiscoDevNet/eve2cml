@@ -69,14 +69,18 @@ def convert_files(file_or_zip: str, mapper: Eve2CMLmapper) -> List[Lab]:
                 if filename.endswith(".unl"):
                     try:
                         content = zip_file.read(file_info.filename)
-                        dir = f"{dirname}--{filename}" if dirname else filename
+                        dir = f"{dirname}--{filename}" if dirname != "." else filename
                         lab.append(convert_file(content.decode("utf-8"), dir, mapper))
                     except KeyError:
                         print(f"File {filename} not found in the ZIP archive.")
     else:
-        with open(file_or_zip, "r", encoding="utf-8") as xml_file:
-            content = xml_file.read()
-            lab.append(convert_file(content, file_or_zip, mapper))
+        try:
+            with open(file_or_zip, "r", encoding="utf-8") as xml_file:
+                content = xml_file.read()
+                lab.append(convert_file(content, file_or_zip, mapper))
+        except FileNotFoundError as exc:
+            _LOGGER.critical("%s", exc)
+            sys.exit(1)
     return lab
 
 
@@ -134,6 +138,9 @@ def main():
         choices=["debug", "info", "warning", "error", "critical"],
         help="specify the log level",
     )
+    parser.add_argument(
+        "--stdout", action="store_true", help="do not store in files, print to stdout"
+    )
     parser.add_argument("--dump", action="store_true", help="Dump the mapper as JSON")
     parser.add_argument("--mapper", help="custom mapper JSON file")
     parser.add_argument("-t", "--text", action="store_true", help="text output")
@@ -171,20 +178,22 @@ def main():
             return dumper.represent_scalar("tag:yaml.org,2002:str", fixed_data)
 
         yaml.add_representer(str, yaml_multiline_string_pipe)
-        if len(labs) == 1:
-            print(yaml.dump(labs[0].as_cml_dict(), sort_keys=False))
-            return
         for lab in labs:
-            cml_filename = Path(lab.filename).with_suffix(".yaml")
+            cml_filename = (
+                sys.stdout.fileno()
+                if args.stdout
+                else Path(lab.filename).with_suffix(".yaml")
+            )
             with open(cml_filename, "w", encoding="utf-8") as cml_file:
                 cml_file.write(yaml.dump(lab.as_cml_dict(), sort_keys=False))
         return
 
     # this is simply text output
-    if len(labs) == 1:
-        dump_as_text(sys.stdout.fileno(), labs[0], args.all)
-    else:
-        for lab in labs:
-            txt_filename = str(Path(lab.filename).with_suffix(".txt"))
-            dump_as_text(txt_filename, lab, args.all)
+    for lab in labs:
+        txt_filename = (
+            sys.stdout.fileno()
+            if args.stdout
+            else str(Path(lab.filename).with_suffix(".txt"))
+        )
+        dump_as_text(txt_filename, lab, args.all)
     return
