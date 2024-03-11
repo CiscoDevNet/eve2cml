@@ -1,8 +1,11 @@
 import logging
-from typing import List
+from typing import TYPE_CHECKING, List
 from xml.etree.ElementTree import Element
 
 from . import Interface
+
+if TYPE_CHECKING:
+    from .lab import Lab
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +31,7 @@ class Node:
         delay=0,
         sat=0,
         icon="",
-        config="",
+        config=0,
         left=0,
         top=0,
         e0dhcp="",
@@ -61,10 +64,8 @@ class Node:
     def __str__(self):
         return f"ID: {self.id}, Name: {self.name}, Type: {self.obj_type}, X: {self.left}, Y: {self.top}, Template: {self.template}, Image: {self.image}, Ethernet: {self.ethernet}"
 
-    def as_cml_dict(self, node_id, lab):
-        node_definition, override = lab.mapper.node_def(
-            self.obj_type, self.template, self.image
-        )
+    def as_cml_dict(self, node_id: int, lab: "Lab"):
+        nd_map = lab.mapper.node_def(self.obj_type, self.template, self.image)
 
         temp_list: List[Interface] = []
         prev = 0
@@ -110,17 +111,18 @@ class Node:
             "boot_disk_size": None,
             "configuration": lab.objects.get_config(self.config, self.id),
             "cpu_limit": 100 - int(self.cpulimit) if self.cpulimit else None,
-            "cpus": int(self.cpu) if (self.cpu and not override) else None,
+            "cpus": int(self.cpu) if (self.cpu and not nd_map.override) else None,
             "data_volume": None,
             "hide_links": False,
             "label": self.name,
-            "node_definition": node_definition,
-            "ram": int(self.ram) if (self.ram and not override) else None,
+            "node_definition": nd_map.node_def,
+            "image_definition": nd_map.image_def,
+            "ram": int(self.ram) if (self.ram and not nd_map.override) else None,
             "tags": [],
             "x": int(self.left),
             "y": int(self.top),
             "interfaces": [
-                iface.as_cml_dict(idx, node_definition, lab)
+                iface.as_cml_dict(idx, nd_map.node_def, lab)
                 for idx, iface in enumerate(temp_list)
             ],
         }
@@ -150,7 +152,7 @@ class Node:
                 delay=int(node_elem.attrib.get("delay", 0)),
                 sat=int(node_elem.attrib.get("sat", 0)),
                 icon=node_elem.attrib.get("icon", ""),
-                config=node_elem.attrib.get("config", ""),
+                config=int(node_elem.attrib.get("config", 0)),
                 left=int(node_elem.attrib.get("left", 0)),
                 top=int(node_elem.attrib.get("top", 0)),
                 e0dhcp=node_elem.attrib.get("e0dhcp", ""),

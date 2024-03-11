@@ -50,6 +50,7 @@ class Lab:
         topology: Topology,
         objects: Objects,
         filename: str,
+        mapper: Eve2CMLmapper,
     ):
         self.name = name
         self.version = version
@@ -60,7 +61,7 @@ class Lab:
         self.description = description
         self.topology = topology
         self.objects = objects
-        self.mapper = Eve2CMLmapper()
+        self.mapper = mapper
         # for conversion, this is the name of the original file
         self.filename = filename
 

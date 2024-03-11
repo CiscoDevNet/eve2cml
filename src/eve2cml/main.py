@@ -15,7 +15,7 @@ from .log import initialize_logging
 _LOGGER = logging.getLogger(__name__)
 
 
-def parse_xml(xml_content: str, filename: str):
+def parse_xml(xml_content: str, filename: str, mapper: Eve2CMLmapper):
     lab = ET.fromstring(xml_content)
     lab_name = lab.attrib.get("name", "")
     lab_version = lab.attrib.get("version", "")
@@ -45,19 +45,20 @@ def parse_xml(xml_content: str, filename: str):
         topology=Topology(nodes=Node.parse(lab), networks=Network.parse(lab)),
         objects=Objects.parse(lab, ".//objects", filename),
         filename=filename,
+        mapper=mapper,
     )
 
     return parsed_lab
 
 
-def convert_file(content: str, filename: str) -> Lab:
+def convert_file(content: str, filename: str, mapper: Eve2CMLmapper) -> Lab:
     _LOGGER.info("Parse XML file %s", filename)
-    lab = parse_xml(content, filename)
+    lab = parse_xml(content, filename, mapper)
     _LOGGER.info("Done with file %s", filename)
     return lab
 
 
-def convert_files(file_or_zip: str) -> List[Lab]:
+def convert_files(file_or_zip: str, mapper: Eve2CMLmapper) -> List[Lab]:
     lab: List[Lab] = []
     if zipfile.is_zipfile(file_or_zip):
         with zipfile.ZipFile(file_or_zip, "r") as zip_file:
@@ -70,13 +71,13 @@ def convert_files(file_or_zip: str) -> List[Lab]:
                     try:
                         content = zip_file.read(file_info.filename)
                         dir = f"{dirname}--{filename}" if dirname else filename
-                        lab.append(convert_file(content.decode("utf-8"), dir))
+                        lab.append(convert_file(content.decode("utf-8"), dir, mapper))
                     except KeyError:
                         print(f"File {filename} not found in the ZIP archive.")
     else:
         with open(file_or_zip, "r", encoding="utf-8") as xml_file:
             content = xml_file.read()
-            lab.append(convert_file(content, file_or_zip))
+            lab.append(convert_file(content, file_or_zip, mapper))
     return lab
 
 
@@ -134,6 +135,8 @@ def main():
         choices=["debug", "info", "warning", "error", "critical"],
         help="specify the log level",
     )
+    parser.add_argument("--dump", action="store_true", help="Dump the mapper as JSON")
+    parser.add_argument("--mapper", help="custom mapper JSON file")
     parser.add_argument("-j", "--json", action="store_true", help="JSON output")
     parser.add_argument("-t", "--text", action="store_true", help="text output")
     parser.add_argument(
@@ -146,6 +149,11 @@ def main():
 
     initialize_logging(args.level)
 
+    if args.dump:
+        _LOGGER.warning("dumping the mapper into %s", args.file_or_zip)
+        Eve2CMLmapper().load().dump(args.file_or_zip)
+        return
+
     if args.all and not args.text:
         _LOGGER.warn("--all is only relevant with text output, ignoring")
 
@@ -153,7 +161,8 @@ def main():
         _LOGGER.error("Either Text or JSON, not both")
         return
 
-    labs = convert_files(args.file_or_zip)
+    mapper = Eve2CMLmapper().load(args.mapper)
+    labs = convert_files(args.file_or_zip, mapper)
 
     if args.json:
         if len(labs) == 1:

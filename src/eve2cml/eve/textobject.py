@@ -97,6 +97,7 @@ class TextObject:
         # object, also font sizes and what else...  Pretty much the Wild West.
         font_tags = self._data.div.find_all("font")
         if len(font_tags) > 0:
+            # First color in list? Or the last... Guessing
             color = font_tags[0].attrs.get("color")
             if color is not None:
                 styles["color"] = color
@@ -135,7 +136,7 @@ class TextObject:
             line_length = max([len(line) for line in self.strings.split("\n")])
             return int(
                 line_length
-                * 0.6
+                * 0.67
                 * float(self.style_summary.get("font-size", "14").strip("px"))
             )
         return int(float(value.strip("px")))
@@ -221,8 +222,6 @@ class TextObject:
                 }
             ]
             if background_color != "":
-                # self._div_style["height"] = "auto"
-                # self._div_style["width"] = "auto"
                 ret_val.append(
                     {
                         "border_color": "#FFFFFF00",

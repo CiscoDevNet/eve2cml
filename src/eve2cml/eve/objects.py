@@ -26,8 +26,8 @@ class Objects:
     def __str__(self):
         return f"Tasks: {self.tasks}, Configs: {self.configs}, Config Sets: {self.configsets}, Text Objects: {self.textobjects}"
 
-    def get_config(self, cfg_set: str, id: str):
-        if cfg_set == "1":
+    def get_config(self, cfg_set: int, id: int):
+        if cfg_set == 1:
             for config in self.configs:
                 if config.id == id:
                     return config.data
