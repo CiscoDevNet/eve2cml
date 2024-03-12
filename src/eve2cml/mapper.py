@@ -1,4 +1,4 @@
-import json
+import yaml
 import logging
 import sys
 from importlib import resources
@@ -44,19 +44,19 @@ class Eve2CMLmapper:
 
     def dump(self, filename: str):
         with open(filename, "w") as fh:
-            return json.dump(self.as_dict(), fh, indent=2)
+            return yaml.safe_dump(self.as_dict(), fh, indent=2)
 
     @classmethod
     def load(cls, filename="") -> "Eve2CMLmapper":
-        map_data = json.loads(resources.read_text(md, "default.json"))
+        map_data = yaml.safe_load(resources.read_text(md, "default.yaml"))
 
         if filename:
             map_file = Path(filename)
             if map_file.is_file():
                 with open(map_file) as fh:
                     try:
-                        map_data = json.load(fh)
-                    except json.JSONDecodeError as exc:
+                        map_data = yaml.safe_load(fh)
+                    except Exception as exc:
                         _LOGGER.critical("can't decode %s: %s", filename, exc)
                         sys.exit(1)
                 _LOGGER.warning("custom mapper loaded: %s", filename)

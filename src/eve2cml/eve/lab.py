@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, List, Tuple
 
 from .interface import Interface
-from .mapper import Eve2CMLmapper
+from eve2cml.mapper import Eve2CMLmapper
 from .network import Network
 from .node import Node
 from .objects import Objects

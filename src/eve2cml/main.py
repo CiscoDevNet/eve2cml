@@ -9,7 +9,8 @@ from typing import List
 
 import yaml
 
-from .eve import Eve2CMLmapper, Lab, Network, Node, Objects, Topology
+from .mapper import Eve2CMLmapper
+from .eve import Lab, Network, Node, Objects, Topology
 from .log import initialize_logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -143,8 +144,8 @@ def main():
         "--stdout", action="store_true", help="do not store in files, print to stdout"
     )
     parser.add_argument("--nocolor", action="store_true", help="no color log output")
-    parser.add_argument("--dump", action="store_true", help="Dump the mapper as JSON")
-    parser.add_argument("--mapper", help="custom mapper JSON file")
+    parser.add_argument("--dump", action="store_true", help="Dump the mapper as YAML")
+    parser.add_argument("--mapper", help="custom mapper YAML file")
     parser.add_argument("-t", "--text", action="store_true", help="text output")
     parser.add_argument(
         "--all", action="store_true", help="print all objects in text mode"
