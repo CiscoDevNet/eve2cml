@@ -38,7 +38,7 @@ jobs:
         make check
     - name: Test with pytest
       run: |
-        coverage run -m pytest
+        PYTHONPATH=src coverage run -m pytest
         coverage lcov
     - name: Code Coverage
       uses: coverallsapp/github-action@master
