@@ -1,9 +1,10 @@
-import yaml
 import logging
 import sys
 from importlib import resources
 from pathlib import Path
 from typing import Dict, List, Optional
+
+import yaml
 
 from . import map_data as md
 
@@ -72,8 +73,14 @@ class Eve2CMLmapper:
         return mapper
 
     def node_def(self, obj_type: str, template: str, image: str) -> CMLdef:
-        found = self.map.get(f"{obj_type}:{template}:{image}")
+        lookup = f"{obj_type}:{template}:{image}"
+        found = self.map.get(lookup)
         if not found:
+            # special case for non-template images like IOL or Docker
+            if image and template == obj_type:
+                for key, cmldef in self.map.items():
+                    if lookup.startswith(key):
+                        return cmldef
             found = self.map.get(f"{obj_type}:{template}")
             if not found:
                 _LOGGER.warning(

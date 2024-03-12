@@ -1,10 +1,15 @@
 # TODOs
 
 ### Configuration sets
+
 - need to provide a command line flag to specify which config set, if present, should be included in the resulting CML YAML file
 - alternatively, if config sets are present, write multiple files, one for each config set
 
 They need to be mapped to bridgeN using ext conns.  Insert an intermediate UMS if the number of connected ports is greater than 1.
+
+## Annotations
+- add "dashed" property for squares and circles
+- add transparency conversion
 
 ## Done
 

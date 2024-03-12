@@ -9,9 +9,10 @@ from typing import List
 
 import yaml
 
-from .mapper import Eve2CMLmapper
+from ._version import __version__
 from .eve import Lab, Network, Node, Objects, Topology
 from .log import initialize_logging
+from .mapper import Eve2CMLmapper
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -134,6 +135,10 @@ def main():
         description="Convert UNL/XML topologies to CML2 topologies"
     )
     parser.epilog = f"Example: {parser.prog} exportedlabs.zip"
+    parser.add_argument(
+        "-V", "--version", action="version", version=f"%(prog)s {__version__}"
+    )
+
     parser.add_argument(
         "--level",
         default="warning",

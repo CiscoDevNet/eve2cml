@@ -88,6 +88,23 @@ interface_lists:
   - Ethernet3/1
   - Ethernet3/2
   - Ethernet3/3
+  ioll2-xe:
+  - Ethernet0/0
+  - Ethernet0/1
+  - Ethernet0/2
+  - Ethernet0/3
+  - Ethernet1/0
+  - Ethernet1/1
+  - Ethernet1/2
+  - Ethernet1/3
+  - Ethernet2/0
+  - Ethernet2/1
+  - Ethernet2/2
+  - Ethernet2/3
+  - Ethernet3/0
+  - Ethernet3/1
+  - Ethernet3/2
+  - Ethernet3/3
   iosv:
   - GigabitEthernet0/0
   - GigabitEthernet0/1
@@ -254,6 +271,10 @@ map:
     image_def: null
     node_def: desktop
     override: true
+  iol:iol:i86bi_linux_l2-ipbasek9:
+    image_def: null
+    node_def: ioll2-xe
+    override: false
   iol:iol:
     image_def: null
     node_def: iol-xe

@@ -1,8 +1,8 @@
 import logging
 from typing import Any, Dict, List, Tuple
 
+from ..mapper import Eve2CMLmapper
 from .interface import Interface
-from eve2cml.mapper import Eve2CMLmapper
 from .network import Network
 from .node import Node
 from .objects import Objects

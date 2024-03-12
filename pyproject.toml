@@ -1,6 +1,6 @@
 [project]
 name = "eve2cml"
-version = "0.1.0"
+dynamic = [ "version" ]
 description = "A CLI tool to convert EVE-NG XML topology data into CML2 topology data as YAML"
 authors = [
     {name = "Ralph Schmieder", email = "rschmied@cisco.com"},
@@ -23,6 +23,11 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[tool.pdm.version]
+source = "scm"
+write_to = "eve2cml/_version.py"
+write_template = "__version__ = '{}'"
 
 [tool.pdm.dev-dependencies]
 dev = [
