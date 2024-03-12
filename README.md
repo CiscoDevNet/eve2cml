@@ -1,5 +1,7 @@
 # eve2cml
 
+[![Coverage Status](https://coveralls.io/repos/github/CiscoDevNet/eve2cml/badge.svg?branch=main)](https://coveralls.io/github/CiscoDevNet/eve2cml?branch=main) ![GH workflow](https://github.com/CiscoDevNet/eve2cml/actions/workflows/python-package.yml/badge.svg)
+
 ![](./assets/header.png)
 
 Convert EVE-NG topology files either in ZIP format or in plain-text XML (.unl) to CML2 YAML format.
