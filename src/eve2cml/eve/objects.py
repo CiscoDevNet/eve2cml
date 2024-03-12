@@ -13,10 +13,10 @@ _LOGGER = logging.getLogger(__name__)
 class Objects:
     def __init__(
         self,
-        tasks: List[Task] = [],
-        configs: List[Config] = [],
-        configsets: List[ConfigSet] = [],
-        textobjects: List[TextObject] = [],
+        tasks: List[Task],
+        configs: List[Config],
+        configsets: List[ConfigSet],
+        textobjects: List[TextObject],
     ):
         self.tasks = tasks
         self.configs = configs
@@ -42,17 +42,17 @@ class Objects:
     def parse(cls, lab: Element, path: str, filename: str) -> "Objects":
         objects = lab.findall(path)
         if len(objects) == 0:
-            return Objects()
+            return Objects(tasks=[], configs=[], configsets=[], textobjects=[])
         if len(objects) > 1:
             _LOGGER.info(
                 "more than one object in tree (%d) for %s", len(objects), filename
             )
-        objects = objects[0]
+        this = objects[0]
         return Objects(
-            Task.parse(objects, "tasks/task"),
-            Config.parse(objects, "configs/config"),
-            ConfigSet.parse(objects, "configsets/configset"),
-            TextObject.parse(objects, "textobjects/textobject"),
+            Task.parse(this, "tasks/task"),
+            Config.parse(this, "configs/config"),
+            ConfigSet.parse(this, "configsets/configset"),
+            TextObject.parse(this, "textobjects/textobject"),
         )
 
     def cml_annotations(self) -> List[Dict[str, Any]]:

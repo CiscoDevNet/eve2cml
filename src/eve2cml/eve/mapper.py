@@ -19,12 +19,7 @@ class CMLdef:
         self.override = override
 
     def __repr__(self):
-        return "{}(node_def={}, image_def={}, override={})".format(
-            self.__class__.__name__,
-            self.node_def,
-            self.image_def,
-            self.override,
-        )
+        return f"{self.__class__.__name__}(node_def={self.node_def}, image_def={self.image_def}, override={self.override})"
 
     def as_dict(self):
         return {
@@ -53,13 +48,12 @@ class Eve2CMLmapper:
 
     @classmethod
     def load(cls, filename="") -> "Eve2CMLmapper":
-
         map_data = json.loads(resources.read_text(md, "default.json"))
 
         if filename:
             map_file = Path(filename)
             if map_file.is_file():
-                with open(map_file, "r") as fh:
+                with open(map_file) as fh:
                     try:
                         map_data = json.load(fh)
                     except json.JSONDecodeError as exc:
@@ -82,7 +76,9 @@ class Eve2CMLmapper:
         if not found:
             found = self.map.get(f"{obj_type}:{template}")
             if not found:
-                _LOGGER.warn("Unmapped node type %s %s %s", obj_type, template, image)
+                _LOGGER.warning(
+                    "Unmapped node type %s %s %s", obj_type, template, image
+                )
                 return CMLdef(self.unknown_type, None, True)
         return found
 

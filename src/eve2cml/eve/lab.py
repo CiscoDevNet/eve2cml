@@ -71,7 +71,7 @@ class Lab:
         self._current_link_id = 0
 
     def as_cml_dict(self):
-        result = {}
+        result: Dict[str, Any] = {}
         result["lab"] = {
             "notes": self.description,
             "description": f"Imported from {self.filename} via eve2cml converter",
@@ -116,11 +116,6 @@ class Lab:
         ext_conn = Node(
             id=next_node_id,
             name=f"ext-{network.obj_type}-{network.name}",
-            obj_type=obj_type,
-            template=obj_type,
-            left=network.left,
-            top=network.top - offset,
-            ethernet=1,
             interfaces=[
                 Interface(
                     id=0,
@@ -130,12 +125,16 @@ class Lab:
                     slot=0,
                 )
             ],
+            obj_type=obj_type,
+            template=obj_type,
+            left=network.left,
+            top=network.top - offset,
+            ethernet=1,
         )
         self.topology.nodes.append(ext_conn)
         return ext_conn
 
     def _insert_ums(self, network: Network, num_ifaces: int):
-
         _LOGGER.info("ums")
         next_node_id = self.topology.next_node_id()
         ums_links = self._connect_internal_network(
@@ -146,10 +145,6 @@ class Lab:
         ums = Node(
             id=next_node_id,
             name=f"ums-{network.obj_type}-{network.name}",
-            obj_type=obj_type,
-            template=obj_type,
-            left=network.left,
-            top=network.top,
             interfaces=[
                 Interface(
                     id=idx,
@@ -160,6 +155,10 @@ class Lab:
                 )
                 for idx in range(num_ifaces)
             ],
+            obj_type=obj_type,
+            template=obj_type,
+            left=network.left,
+            top=network.top,
         )
         ums.ethernet = 8 if num_ifaces < 8 else num_ifaces
         self.topology.nodes.append(ums)

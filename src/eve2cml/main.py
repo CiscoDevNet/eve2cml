@@ -1,4 +1,5 @@
 import argparse
+import io
 import logging
 import sys
 import xml.etree.ElementTree as ET
@@ -8,7 +9,7 @@ from typing import List
 
 import yaml
 
-from .eve import *
+from .eve import Eve2CMLmapper, Lab, Network, Node, Objects, Topology
 from .log import initialize_logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -75,72 +76,73 @@ def convert_files(file_or_zip: str, mapper: Eve2CMLmapper) -> List[Lab]:
                         print(f"File {filename} not found in the ZIP archive.")
     else:
         try:
-            with open(file_or_zip, "r", encoding="utf-8") as xml_file:
-                content = xml_file.read()
-                lab.append(convert_file(content, file_or_zip, mapper))
+            with open(file_or_zip, encoding="utf-8") as xml_file:
+                txt_content = xml_file.read()
+                lab.append(convert_file(txt_content, file_or_zip, mapper))
         except FileNotFoundError as exc:
             _LOGGER.critical("%s", exc)
             sys.exit(1)
     return lab
 
 
-def dump_as_text(filename: "str|int", lab: Lab, dump_all: bool):
-    with open(filename, "w", encoding="utf-8") as out:
-        out.write(">>> Nodes <<<\n")
-        for node in lab.topology.nodes:
-            out.write(f"{node}\n")
-            num_ifaces = len(node.interfaces) - 1
-            for idx, interface in enumerate(node.interfaces):
-                bullet = "|--" if idx < num_ifaces else "\\__"
-                out.write(f"  {bullet} {interface}\n")
-            out.write("\n")
-
-        out.write(">>> Networks <<<\n")
-        for network in lab.topology.networks:
-            out.write(f"{network}")
+def dump_as_text(out: io.TextIOWrapper, lab: Lab, dump_all: bool):
+    out.write(">>> Nodes <<<\n")
+    for node in lab.topology.nodes:
+        out.write(f"{node}\n")
+        num_ifaces = len(node.interfaces) - 1
+        for idx, interface in enumerate(node.interfaces):
+            bullet = "|--" if idx < num_ifaces else "\\__"
+            out.write(f"  {bullet} {interface}\n")
         out.write("\n")
 
-        out.write(">>> Text objects <<<\n")
-        for text_object in lab.objects.textobjects:
-            out.write(f"{text_object}")
+    out.write(">>> Networks <<<\n")
+    for network in lab.topology.networks:
+        out.write(f"{network}")
+    out.write("\n")
+
+    out.write(">>> Text objects <<<\n")
+    for text_object in lab.objects.textobjects:
+        out.write(f"{text_object}")
+    out.write("\n")
+
+    if not dump_all:
+        return
+
+    out.write(">>> Tasks <<<\n")
+    for task in lab.objects.tasks:
+        out.write(f"{task}")
+    out.write("\n")
+
+    out.write(">>> Configs <<<\n")
+    for config in lab.objects.configs:
+        out.write(f"{config}")
+    out.write("\n")
+
+    out.write(">>> Config sets <<<\n")
+    for configset in lab.objects.configsets:
+        out.write(f"Config Set ID: {configset.id}\n")
+        out.write(f"Config Set Name: {configset.name}\n")
+        out.write("Contained Configs:\n")
+        for config in configset.configs:
+            out.write(f"{config}\n")
         out.write("\n")
-
-        if not dump_all:
-            return
-
-        out.write(">>> Tasks <<<\n")
-        for task in lab.objects.tasks:
-            out.write(f"{task}")
-        out.write("\n")
-
-        out.write(">>> Configs <<<\n")
-        for config in lab.objects.configs:
-            out.write(f"{config}")
-        out.write("\n")
-
-        out.write(">>> Config sets <<<\n")
-        for configset in lab.objects.configsets:
-            out.write(f"Config Set ID: {configset.id}\n")
-            out.write(f"Config Set Name: {configset.name}\n")
-            out.write("Contained Configs:\n")
-            for config in configset.configs:
-                out.write(f"{config}\n")
-            out.write("\n")
 
 
 def main():
     parser = argparse.ArgumentParser(
         description="Convert UNL/XML topologies to CML2 topologies"
     )
+    parser.epilog = f"Example: {parser.prog} exportedlabs.zip"
     parser.add_argument(
         "--level",
         default="warning",
         choices=["debug", "info", "warning", "error", "critical"],
-        help="specify the log level",
+        help="specify the log level, default is warning",
     )
     parser.add_argument(
         "--stdout", action="store_true", help="do not store in files, print to stdout"
     )
+    parser.add_argument("--nocolor", action="store_true", help="no color log output")
     parser.add_argument("--dump", action="store_true", help="Dump the mapper as JSON")
     parser.add_argument("--mapper", help="custom mapper JSON file")
     parser.add_argument("-t", "--text", action="store_true", help="text output")
@@ -152,7 +154,7 @@ def main():
     )
     args = parser.parse_args()
 
-    initialize_logging(args.level)
+    initialize_logging(args.level, args.nocolor)
 
     if args.dump:
         _LOGGER.warning("dumping the mapper into %s", args.file_or_zip)
@@ -197,5 +199,6 @@ def main():
             if args.stdout
             else str(Path(lab.filename).with_suffix(".txt"))
         )
-        dump_as_text(txt_filename, lab, args.all)
+        with open(txt_filename, "w", encoding="utf-8") as out:
+            dump_as_text(out, lab, args.all)
     return

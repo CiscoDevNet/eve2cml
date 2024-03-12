@@ -78,7 +78,6 @@ class TextObject:
 
     @cached_property
     def style_summary(self):
-
         def has_style(tag):
             has = tag.has_attr("style")
             return has
@@ -87,7 +86,7 @@ class TextObject:
             return {}
 
         style = self._data.div.find_all(has_style)
-        styles = {}
+        styles: Dict[str, str] = {}
         for el in style:
             el_style = parse_style(el["style"])
             styles = {**styles, **el_style}

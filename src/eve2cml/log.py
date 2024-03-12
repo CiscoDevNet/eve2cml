@@ -26,7 +26,7 @@ class ColorFormatter(logging.Formatter):
         return super().format(record)
 
 
-def initialize_logging(level_str: str):
+def initialize_logging(level_str: str, nocolor: bool):
     # get the root logger
     logger = logging.getLogger()
 
@@ -39,9 +39,11 @@ def initialize_logging(level_str: str):
     ch.setLevel(level)
 
     # Create formatter and set to handler
-    # formatter = ColorFormatter("%(levelname)s %(message)s")
-    formatter = ColorFormatter("%(levelname)s [%(module)s:%(lineno)d] %(message)s")
-
+    log_format = "%(levelname)s [%(module)s:%(lineno)d] %(message)s"
+    if nocolor:
+        formatter = logging.Formatter(log_format)
+    else:
+        formatter = ColorFormatter(log_format)
     ch.setFormatter(formatter)
 
     # Add handler to logger

@@ -15,6 +15,7 @@ class Node:
         self,
         id: int,
         name: str,
+        interfaces: List[Interface],
         obj_type="",
         template="",
         image="",
@@ -35,10 +36,10 @@ class Node:
         left=0,
         top=0,
         e0dhcp="",
-        interfaces: List[Interface] = [],
     ):
         self.id = id
         self.name = name
+        self.interfaces = interfaces
         self.obj_type = obj_type
         self.template = template
         self.image = image
@@ -59,7 +60,6 @@ class Node:
         self.left = left
         self.top = top
         self.e0dhcp = e0dhcp
-        self.interfaces = interfaces
 
         self.cml_hide_links = False
         self.cml_config = ""
@@ -143,6 +143,9 @@ class Node:
             node = Node(
                 id=id,
                 name=node_elem.attrib.get("name", "unknown"),
+                interfaces=Interface.parse(
+                    id, obj_type, node_elem.findall("interface")
+                ),
                 obj_type=obj_type,
                 template=node_elem.attrib.get("template", "unknown"),
                 image=node_elem.attrib.get("image", "unknown"),
@@ -163,9 +166,6 @@ class Node:
                 left=int(node_elem.attrib.get("left", 0)),
                 top=int(node_elem.attrib.get("top", 0)),
                 e0dhcp=node_elem.attrib.get("e0dhcp", ""),
-                interfaces=Interface.parse(
-                    id, obj_type, node_elem.findall("interface")
-                ),
             )
             nodes.append(node)
         return nodes
