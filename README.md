@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/eve2cml.svg)](https://pypi.org/project/eve2cml/) [![Coverage Status](https://coveralls.io/repos/github/CiscoDevNet/eve2cml/badge.svg?branch=main)](https://coveralls.io/github/CiscoDevNet/eve2cml?branch=main) [![GH workflow](https://github.com/CiscoDevNet/eve2cml/actions/workflows/python-package.yml/badge.svg)](https://github.com/CiscoDevNet/eve2cml/actions/workflows/python-package.yml)
 
-![image showing a topology conversion](./assets/header.png)
+![image showing a topology conversion](https://raw.githubusercontent.com/CiscoDevNet/eve2cml/main/assets/header.png)
 
 Convert EVE-NG topology files either in ZIP format or in plain-text XML (.unl) to CML2 YAML format.
 
