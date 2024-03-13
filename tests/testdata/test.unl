@@ -28,6 +28,12 @@
       <config id="1">aG9zdG5hbWUgaG9zdDEK</config>
       <config id="2">aG9zdG5hbWUgaG9zdDIK</config>
     </configs>
+    <configsets>
+      <configset id="1" name="Solved">
+        <config id="1">aG9zdG5hbWUgaG9zdDEK</config>
+        <config id="2">aG9zdG5hbWUgaG9zdDIK</config>
+      </configset>
+    </configsets>
   </objects>
   <objects/>
 </lab>

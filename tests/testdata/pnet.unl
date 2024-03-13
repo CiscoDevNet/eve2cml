@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<lab name="test" version="1" scripttimeout="300" lock="0" author="rschmied">
+  <description>uses pnet0</description>
+  <body>this is a task right here</body>
+  <topology>
+    <nodes>
+      <node id="1" name="VPC1" type="vpcs" template="vpcs" image="" ethernet="1" delay="0" icon="Desktop.png" config="1" left="719" top="267">
+        <interface id="0" name="eth0" type="ethernet" network_id="1"/>
+      </node>
+      <node id="2" name="VPC2" type="vpcs" template="vpcs" image="" ethernet="1" delay="0" icon="Desktop.png" config="1" left="1134" top="267">
+        <interface id="0" name="eth0" type="ethernet" network_id="1"/>
+      </node>
+    </nodes>
+    <networks>
+      <network id="1" type="pnet0" name="pnet0" left="779" top="307" visibility="0" icon="internet.png"/>
+    </networks>
+  </topology>
+  <objects>
+    <configs>
+      <config id="1">aG9zdG5hbWUgaG9zdDEK</config>
+      <config id="2">aG9zdG5hbWUgaG9zdDIK</config>
+    </configs>
+  </objects>
+  <objects/>
+</lab>

@@ -15,6 +15,18 @@ import pytest
             "annotations": 1,
         },
         {
+            "filename": "nat.unl",
+            "nodes": 4,
+            "links": 2,
+            "annotations": 0,
+        },
+        {
+            "filename": "pnet.unl",
+            "nodes": 4,
+            "links": 3,
+            "annotations": 0,
+        },
+        {
             "filename": "test.unl",
             "nodes": 2,
             "links": 1,

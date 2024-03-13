@@ -1,3 +1,4 @@
+import io
 import logging
 import sys
 from importlib import resources
@@ -43,9 +44,8 @@ class Eve2CMLmapper:
             "interface_lists": self.interface_lists,
         }
 
-    def dump(self, filename: str):
-        with open(filename, "w") as fh:
-            return yaml.safe_dump(self.as_dict(), fh, indent=2)
+    def dump(self, out: io.TextIOWrapper):
+        return yaml.safe_dump(self.as_dict(), out, indent=2)
 
     @classmethod
     def load(cls, filename="") -> "Eve2CMLmapper":

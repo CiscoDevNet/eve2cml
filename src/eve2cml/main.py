@@ -164,7 +164,9 @@ def main():
 
     if args.dump:
         _LOGGER.warning("dumping the mapper into %s", args.file_or_zip)
-        Eve2CMLmapper().load().dump(args.file_or_zip[0])
+        filename = sys.stdout.fileno() if args.stdout else args.file_or_zip[0]
+        with open(filename, "w") as fh:
+            Eve2CMLmapper().load().dump(fh)
         return
 
     if args.all and not args.text:

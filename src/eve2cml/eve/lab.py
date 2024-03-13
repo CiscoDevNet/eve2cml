@@ -84,6 +84,12 @@ class Lab:
             node.as_cml_dict(node.id, self) for node in self.topology.nodes
         ]
 
+        labels = {node["label"] for node in result["nodes"]}
+        if len(labels) != len(result["nodes"]):
+            _LOGGER.warning(
+                "node labels are not unique, this can not be imported into CML!"
+            )
+
         return result
 
     def __str__(self):
@@ -110,7 +116,7 @@ class Lab:
             for idx, found in enumerate(found_ids)
         ]
 
-    def _insert_ext_conn(self, network: Network, offset=0) -> Node:
+    def _insert_ext_conn(self, network: Network, config: str, offset=0) -> Node:
         next_node_id = self.topology.next_node_id()
         obj_type = "cml_ext_conn"
         ext_conn = Node(
@@ -131,6 +137,7 @@ class Lab:
             top=network.top - offset,
             ethernet=1,
         )
+        ext_conn.cml_config = config
         self.topology.nodes.append(ext_conn)
         return ext_conn
 
@@ -197,7 +204,7 @@ class Lab:
                 if num_ifaces != 1:
                     _LOGGER.error("NAT interface has %d ifaces", num_ifaces)
                     continue
-                ext_conn = self._insert_ext_conn(network)
+                ext_conn = self._insert_ext_conn(network, config="nat")
                 self._links.append(
                     CMLlink(
                         ifcelist[0].node_id,
@@ -212,8 +219,9 @@ class Lab:
             elif network.obj_type.startswith("pnet"):
                 _LOGGER.info("pnet")
                 bridge_number = int(network.obj_type.lstrip("pnet"))
-                ext_conn = self._insert_ext_conn(network, 64)
-                ext_conn.cml_config = f"bridge{bridge_number}"
+                ext_conn = self._insert_ext_conn(
+                    network, config=f"bridge{bridge_number}", offset=64
+                )
                 self._insert_ums(network, num_ifaces + 1)
 
             elif network.obj_type == "internal":
