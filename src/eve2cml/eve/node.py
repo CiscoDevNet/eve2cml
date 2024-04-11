@@ -74,6 +74,9 @@ class Node:
         prev = 0
         for idx, iface in enumerate(self.interfaces):
             delta = iface.slot - prev
+            _LOGGER.debug(
+                "idx, slot, prev, delta %d/%d/%d/%d", idx, iface.slot, prev, delta
+            )
             for idx2 in range(delta):
                 temp_list.append(
                     Interface(
@@ -81,11 +84,13 @@ class Node:
                         obj_type=self.obj_type,
                         network_id=999999,
                         name="filler",
-                        slot=idx + idx2,
+                        slot=prev + idx2,
                     )
                 )
             temp_list.append(iface)
             prev = iface.slot + 1
+
+        _LOGGER.debug("list %s", temp_list)
 
         iface_count = len(temp_list)
         iface_diff = int(self.ethernet) - iface_count

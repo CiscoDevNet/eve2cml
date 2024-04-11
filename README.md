@@ -26,7 +26,7 @@ The mapper defines three elements:
   - `node_def`: the mapped CML node definition ID
   - `override`: a boolean. It determines whether values like CPU or memory should be taken from the EVE definition.  If `true` then the EVE values will not be used, the default values from CML for this particular node type will then be used instead
 
-  There's a specific "corner case" where the type is identical to the template (e.g. "iol:iol" or "docker:docker").  In this particular case, mapper keys are searched for partial matches where the map key matches the beginning of the provided EVE image.  For example, "iol:iol:i86bi_linux_l2-ipbasek9:" matches all IOL images that start with `i86bi_linux-ipbasek9` and maps them (by default) into `ioll2-xe`.
+  There's a specific "corner case" where the type is identical to the template (e.g. "iol:iol" or "docker:docker").  In this particular case, mapper keys are searched for partial matches where the map key matches the beginning of the provided EVE image.  For example, "iol:iol:i86bi_linux_l2:" matches all IOL images that start with `i86bi_linux_l2` and maps them (by default) into `ioll2-xe`.
 
 After modification / adding more or different node type mappings to the exported map YAML, use the file via the `--mapper modified_map.yaml` flag.
 
@@ -67,9 +67,17 @@ If you have a more complete map file with additional or more specific node type 
 
 If you encounter any issues with the converter then please open a issue in the [GitHub issue tracker](https://github.com/CiscoDevNet/eve2cml/issues).
 
+#### IOL interfaces
+
+There's a known issue with the maximum number of interfaces defined in the shipping node definitions for IOL and IOL-L2.  As for the released version of CML 2.7.0, the maximum number of interfaces is 16.  If you have topologies which use more interfaces (`Ethernet4/0` and up) then you need to add the additional interfaces to the node definition in CML (Tools -> Node and image definitions -> IOL / IOL-L2).  In the interface section, add the required interfaces and name them properly.  Don't forget to click "Update" at the bottom when done.
+
+This is likely fixed in the 2.7.1 release, once available.
+
+The converter has now 32 interfaces defined in the mapper (`Ethernet0/0` to `Ethernet7/3`).
+
 #### Known issues
 
-There's a few things which are known to cause issues.  Some of them might be addressable by code changes in the converter and/or changes on the CML side of things.  And some might just not be possible at all.  
+There's a few things which are known to cause issues.  Some of them might be addressable by code changes in the converter and/or changes on the CML side of things.  And some might just not be possible at all.
 
 - Rotation of annotation only works for text.  Ellipses and rectangles don't support rotation on the CML side of things.  To be addressed in a future CML release
 - Text objects in EVE can have a background color.  The converter adds additional rectangles behind the text object in CML.  It "guesses" the size of these rectangles.  Those guesses are inaccurate.
