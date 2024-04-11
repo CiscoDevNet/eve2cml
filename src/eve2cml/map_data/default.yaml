@@ -88,6 +88,22 @@ interface_lists:
   - Ethernet3/1
   - Ethernet3/2
   - Ethernet3/3
+  - Ethernet4/0
+  - Ethernet4/1
+  - Ethernet4/2
+  - Ethernet4/3
+  - Ethernet5/0
+  - Ethernet5/1
+  - Ethernet5/2
+  - Ethernet5/3
+  - Ethernet6/0
+  - Ethernet6/1
+  - Ethernet6/2
+  - Ethernet6/3
+  - Ethernet7/0
+  - Ethernet7/1
+  - Ethernet7/2
+  - Ethernet7/3
   ioll2-xe:
   - Ethernet0/0
   - Ethernet0/1
@@ -105,6 +121,22 @@ interface_lists:
   - Ethernet3/1
   - Ethernet3/2
   - Ethernet3/3
+  - Ethernet4/0
+  - Ethernet4/1
+  - Ethernet4/2
+  - Ethernet4/3
+  - Ethernet5/0
+  - Ethernet5/1
+  - Ethernet5/2
+  - Ethernet5/3
+  - Ethernet6/0
+  - Ethernet6/1
+  - Ethernet6/2
+  - Ethernet6/3
+  - Ethernet7/0
+  - Ethernet7/1
+  - Ethernet7/2
+  - Ethernet7/3
   iosv:
   - GigabitEthernet0/0
   - GigabitEthernet0/1
@@ -271,7 +303,7 @@ map:
     image_def: null
     node_def: desktop
     override: true
-  iol:iol:i86bi_linux_l2-ipbasek9:
+  iol:iol:i86bi_linux_l2:
     image_def: null
     node_def: ioll2-xe
     override: false

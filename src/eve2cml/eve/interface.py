@@ -38,6 +38,9 @@ class Interface:
     def __str__(self):
         return f"ID: {self.id}, Name: {self.name}, Type: {self.obj_type}, NetID: {self.network_id}"
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}(id={self.id}, slot={self.slot})"
+
     def as_cml_dict(self, idx, node_def, lab):
         return {
             "id": f"i{idx}",

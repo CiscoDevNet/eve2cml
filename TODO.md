@@ -8,6 +8,7 @@
 They need to be mapped to bridgeN using ext conns.  Insert an intermediate UMS if the number of connected ports is greater than 1.
 
 ## Annotations
+
 - add "dashed" property for squares and circles
 - add transparency conversion
 
