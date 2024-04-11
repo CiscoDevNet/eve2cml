@@ -74,7 +74,9 @@ class Node:
         prev = 0
         for idx, iface in enumerate(self.interfaces):
             delta = iface.slot - prev
-            _LOGGER.debug("idx, slot, prev, delta %d/%d/%d/%d", idx, iface.slot, prev, delta)
+            _LOGGER.debug(
+                "idx, slot, prev, delta %d/%d/%d/%d", idx, iface.slot, prev, delta
+            )
             for idx2 in range(delta):
                 temp_list.append(
                     Interface(
