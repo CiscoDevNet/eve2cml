@@ -32,6 +32,9 @@ After modification / adding more or different node type mappings to the exported
 
 Disclaimer:  There's certainly things out there which do not properly translate.  If you encounter anything then raise an issue in the issue tracker and I'll look into it.
 
+> [!NOTE]
+> It is possible to change node types when importing.  For example, you might want to change IOSv-L2 instances to IOLL2-XE instances by providing a custom import map.  Note, however, that this does **NOT** change the device configuration of the imported nodes.  So, if the configuration uses `GigabitEthernet0/4` in the original IOSv-L2 configuration then it is your responsibility to change this to `Ethernet1/0` for the configuration of the imported IOLL2-XE device.  This can be easily done via a sed script or using a text editor and global search and replace.  However, this might be more involved depending on the original/target device type.
+
 ### Usage
 
 ```

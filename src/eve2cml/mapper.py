@@ -77,16 +77,17 @@ class Eve2CMLmapper:
         found = self.map.get(lookup)
         if not found:
             # special case for non-template images like IOL or Docker
-            if image and template == obj_type:
-                for key, cmldef in self.map.items():
-                    if lookup.startswith(key):
-                        return cmldef
-            found = self.map.get(f"{obj_type}:{template}")
-            if not found:
-                _LOGGER.warning(
-                    "Unmapped node type %s %s %s", obj_type, template, image
-                )
-                return CMLdef(self.unknown_type, None, True)
+            longest_prefix = ""
+            longest_cmldef = None
+            for key, cmldef in self.map.items():
+                if lookup.startswith(key) and len(key) > len(longest_prefix):
+                    longest_prefix = key
+                    longest_cmldef = cmldef
+            if longest_cmldef:
+                _LOGGER.info("mapped node type %s", longest_cmldef)
+                return longest_cmldef
+            _LOGGER.warning("Unmapped node type %s %s %s", obj_type, template, image)
+            return CMLdef(self.unknown_type, None, True)
         return found
 
     def cml_iface_label(self, slot: int, node_def: str, label: str) -> str:
