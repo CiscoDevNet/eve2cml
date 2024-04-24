@@ -33,7 +33,7 @@ After modification / adding more or different node type mappings to the exported
 Disclaimer:  There's certainly things out there which do not properly translate.  If you encounter anything then raise an issue in the issue tracker and I'll look into it.
 
 > [!NOTE]
-> It is possible to change node types when importing.  For example, you might want to change IOSv-L2 instances to IOLL2-XE instances by providing a custom import map.  Note, however, that this does **NOT** change the device configuration of the imported nodes.  So, if the configuration uses `GigabitEthernet0/4` in the original IOSv-L2 configuration then it is your responsibility to change this to `Ethernet1/0` for the configuration of the imported IOLL2-XE device.  This can be easily done via a sed script or using a text editor and global search and replace.  However, this might be more involved depending on the original/target device type.
+> It is possible to change node types when importing.  For example, you might want to change IOSv-L2 instances to IOLL2-XE instances by providing a custom import map.  However, this does **NOT** change the device configuration of the imported nodes.  So, if the configuration uses `GigabitEthernet0/4` in the original IOSv-L2 configuration then it is your responsibility to change this to `Ethernet1/0` for the configuration of the imported IOLL2-XE device.  This can be easily done via a sed script or using a text editor and global search and replace.  But this might be more involved depending on the original/target device type.  See the "Change configurations" section below for an example.
 
 ### Usage
 
@@ -62,6 +62,49 @@ Example: eve2cml exportedlabs.zip
 
 $
 ```
+### Change configurations
+
+With a custom mapper file, node types can be modified while importing.  For example, adding map entries like the following
+
+```yaml
+  qemu:vios:
+    image_def: null
+    node_def: iol-xe
+    override: false
+  qemu:viosl2:
+    image_def: null
+    node_def: ioll2-xe
+    override: false
+```
+
+to the mapper will change all IOSv instances to IOL-XE instances and all IOSv-L2 instances to IOLL2-XE instances.  However, the day zero configuration files of those nodes will not be modified to match the now different interface names.  In this particular case, where most of the configuration between IOSv and IOL-XE is identical *except for the interface names*, a simple sed script can do the trick.  Here's how this can be done:
+
+1. create a sed script file with this content, filename `ios2iol-config`:
+   ```plain
+   s#GigabitEthernet0/0#Ethernet0/0#
+   s#GigabitEthernet0/1#Ethernet0/1#
+   s#GigabitEthernet0/2#Ethernet0/2#
+   s#GigabitEthernet0/3#Ethernet0/3#
+   s#GigabitEthernet0/4#Ethernet1/0#
+   s#GigabitEthernet0/5#Ethernet1/1#
+   s#GigabitEthernet0/6#Ethernet1/2#
+   s#GigabitEthernet0/7#Ethernet1/3#
+   s#GigabitEthernet0/8#Ethernet2/0#
+   s#GigabitEthernet0/9#Ethernet2/1#
+   s#GigabitEthernet0/10#Ethernet2/2#
+   s#GigabitEthernet0/11#Ethernet2/3#
+   s#GigabitEthernet0/12#Ethernet3/0#
+   s#GigabitEthernet0/13#Ethernet3/1#
+   s#GigabitEthernet0/14#Ethernet3/2#
+   s#GigabitEthernet0/15#Ethernet3/3#
+   ```
+2. dump the default / built-in mapper into a file (`--dump` option)
+3. modify the mapper to include the changes outlined above
+2. convert the topology with the modified map file (`--mapper` option)
+3. run `sed -f ios2iol-config lab.yaml >lab_with_configs_changed.yaml`
+
+This will change all occurrences within the CML lab file from IOSv notation to IOL notation.
+
 ### Contributing
 
 If you have a more complete map file with additional or more specific node type mappings or if you have improved the code, fixed a bug or a typo or added a new feature then I more than welcome you to raise a pull request!

@@ -71,24 +71,32 @@ class Node:
         nd_map = lab.mapper.node_def(self.obj_type, self.template, self.image)
 
         temp_list: List[Interface] = []
-        prev = 0
+        prev_idx = 0
+        prev_slot = 0
+        _LOGGER.debug(self.interfaces)
         for idx, iface in enumerate(self.interfaces):
-            delta = iface.slot - prev
+            delta = iface.slot - prev_slot
             _LOGGER.debug(
-                "idx, slot, prev, delta %d/%d/%d/%d", idx, iface.slot, prev, delta
+                "idx, slot, prev, delta %d/%d/%d/%d", idx, iface.slot, prev_slot, delta
             )
             for idx2 in range(delta):
+                _LOGGER.debug(
+                    "prepending filler interface id %d/%d", prev_idx, prev_slot + idx2
+                )
                 temp_list.append(
                     Interface(
-                        id=idx + idx2,
+                        id=prev_idx,
                         obj_type=self.obj_type,
                         network_id=999999,
                         name="filler",
-                        slot=prev + idx2,
+                        slot=prev_slot + idx2,
                     )
                 )
+                prev_idx += 1
+            iface.id = prev_idx
             temp_list.append(iface)
-            prev = iface.slot + 1
+            prev_slot = iface.slot + 1
+            prev_idx += 1
 
         _LOGGER.debug("list %s", temp_list)
 
