@@ -167,3 +167,7 @@ cython_debug/
 UNLs/
 ZIPs/
 assets/header.xcf
+
+.DS_Store
+*.yaml
+*.unl
