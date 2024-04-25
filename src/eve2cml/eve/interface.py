@@ -42,7 +42,10 @@ class Interface:
         return f"{self.__class__.__name__}(id={self.id}, slot={self.slot})"
 
     def as_cml_dict(self, idx, node_def, lab):
+        # can likely remove the idx arg as the id should match the idx!
+        assert self.id == idx
         return {
+            # "id": f"i{self.id}",
             "id": f"i{idx}",
             "label": lab.mapper.cml_iface_label(self.slot, node_def, self.name),
             "slot": self.slot,
@@ -57,7 +60,7 @@ class Interface:
         no_iol = obj_type != "iol"
 
         interfaces: List[Interface] = []
-        for idx, interface_elem in enumerate(elem):
+        for interface_elem in elem:
             id = int(interface_elem.attrib.get("id", "unknown"))
             interface = Interface(
                 id=id,
@@ -71,7 +74,7 @@ class Interface:
                 srcpos=interface_elem.attrib.get("srcpos", ""),
                 dstpos=interface_elem.attrib.get("dstpos", ""),
                 node_id=node_id,
-                slot=idx if no_iol else ((id & 0xF) * 4) + (id >> 4),
+                slot=id if no_iol else ((id & 0xF) * 4) + (id >> 4),
             )
             interfaces.append(interface)
         return interfaces

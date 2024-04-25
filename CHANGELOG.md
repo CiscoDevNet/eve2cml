@@ -1,5 +1,9 @@
 # CHANGELOG
 
+- v0.1.0b4
+    - fix slot calculation
+    - added a section about manual node configuration changes to the README
+    - more diagnostic output at debug log level
 - v0.1.0b3
     - fix longest prefix node type mapping
     - update package meta data
