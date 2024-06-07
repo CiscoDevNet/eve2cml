@@ -290,6 +290,74 @@ interface_lists:
   - port29
   - port30
   - port31
+  iosxrv:
+  - MgmtEth0/0/CPU0/0
+  - GigabitEthernet0/0/0/0
+  - GigabitEthernet0/0/0/1
+  - GigabitEthernet0/0/0/2
+  - GigabitEthernet0/0/0/3
+  - GigabitEthernet0/0/0/4
+  - GigabitEthernet0/0/0/5
+  - GigabitEthernet0/0/0/6
+  - GigabitEthernet0/0/0/7
+  - GigabitEthernet0/0/0/8
+  - GigabitEthernet0/0/0/9
+  - GigabitEthernet0/0/0/10
+  - GigabitEthernet0/0/0/11
+  - GigabitEthernet0/0/0/12
+  - GigabitEthernet0/0/0/13
+  - GigabitEthernet0/0/0/14
+  - GigabitEthernet0/0/0/15
+  - GigabitEthernet0/0/0/16
+  - GigabitEthernet0/0/0/17
+  - GigabitEthernet0/0/0/18
+  - GigabitEthernet0/0/0/19
+  - GigabitEthernet0/0/0/20
+  - GigabitEthernet0/0/0/21
+  - GigabitEthernet0/0/0/22
+  - GigabitEthernet0/0/0/23
+  - GigabitEthernet0/0/0/24
+  - GigabitEthernet0/0/0/25
+  - GigabitEthernet0/0/0/26
+  - GigabitEthernet0/0/0/27
+  - GigabitEthernet0/0/0/28
+  - GigabitEthernet0/0/0/29
+  - GigabitEthernet0/0/0/30
+  iosxrv9000:
+  - MgmtEth0/RP0/CPU0/0
+  - donotuse1
+  - donotuse2
+  - GigabitEthernet0/0/0/0
+  - GigabitEthernet0/0/0/1
+  - GigabitEthernet0/0/0/2
+  - GigabitEthernet0/0/0/3
+  - GigabitEthernet0/0/0/4
+  - GigabitEthernet0/0/0/5
+  - GigabitEthernet0/0/0/6
+  - GigabitEthernet0/0/0/7
+  - GigabitEthernet0/0/0/8
+  - GigabitEthernet0/0/0/9
+  - GigabitEthernet0/0/0/10
+  - GigabitEthernet0/0/0/11
+  - GigabitEthernet0/0/0/12
+  - GigabitEthernet0/0/0/13
+  - GigabitEthernet0/0/0/14
+  - GigabitEthernet0/0/0/15
+  - GigabitEthernet0/0/0/16
+  - GigabitEthernet0/0/0/17
+  - GigabitEthernet0/0/0/18
+  - GigabitEthernet0/0/0/19
+  - GigabitEthernet0/0/0/20
+  - GigabitEthernet0/0/0/21
+  - GigabitEthernet0/0/0/22
+  - GigabitEthernet0/0/0/23
+  - GigabitEthernet0/0/0/24
+  - GigabitEthernet0/0/0/25
+  - GigabitEthernet0/0/0/26
+  - GigabitEthernet0/0/0/27
+  - GigabitEthernet0/0/0/28
+  - GigabitEthernet0/0/0/29
+  - GigabitEthernet0/0/0/30
 map:
   cml_ext_conn:cml_ext_conn:
     image_def: null
@@ -350,5 +418,13 @@ map:
   qemu:vtsmart:
     image_def: null
     node_def: cat-sdwan-controller
+    override: false
+  qemu:xrv:
+    image_def: null
+    node_def: iosxrv
+    override: false
+  qemu:xrv9k:
+    image_def: null
+    node_def: iosxrv9000
     override: false
 unknown_type: server
