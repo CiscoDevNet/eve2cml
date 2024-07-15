@@ -1,13 +1,12 @@
 import io
 import logging
 import sys
-from importlib import resources
+from importlib.resources import files
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import yaml
-
-from . import map_data as md
+from yaml.parser import ParserError
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +48,9 @@ class Eve2CMLmapper:
 
     @classmethod
     def load(cls, filename="") -> "Eve2CMLmapper":
-        map_data = yaml.safe_load(resources.read_text(md, "default.yaml"))
+        map_data = yaml.safe_load(
+            files("eve2cml.map_data").joinpath("default.yaml").read_text()
+        )
 
         if filename:
             map_file = Path(filename)
@@ -57,9 +58,12 @@ class Eve2CMLmapper:
                 with open(map_file) as fh:
                     try:
                         map_data = yaml.safe_load(fh)
-                    except Exception as exc:
+                    except ParserError as exc:
                         _LOGGER.critical("can't decode %s: %s", filename, exc)
                         sys.exit(1)
+                if not isinstance(map_data, dict):
+                    _LOGGER.critical("can't use provided mapper file")
+                    sys.exit(1)
                 _LOGGER.warning("custom mapper loaded: %s", filename)
             else:
                 _LOGGER.error("mapper provided but not found. Using built-in mapper!")
@@ -73,7 +77,9 @@ class Eve2CMLmapper:
         return mapper
 
     def node_def(self, obj_type: str, template: str, image: str) -> CMLdef:
-        lookup = f"{obj_type}:{template}:{image}"
+        lookup = f"{obj_type}:{template}"
+        if len(image) > 0:
+            lookup += f"{lookup}:{image}"
         found = self.map.get(lookup)
         if not found:
             # special case for non-template images like IOL or Docker

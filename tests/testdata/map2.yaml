@@ -1,0 +1,14 @@
+interface_lists:
+  desktop:
+    - {eth0
+    - eth1
+    - eth2
+    - eth3
+  external_connector:
+    - port
+map:
+  docker:docker:
+    image_def: null
+    node_def: desktop
+    override: true
+unknown_type: desktop

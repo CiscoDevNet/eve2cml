@@ -10,6 +10,33 @@ Convert EVE-NG topology files either in ZIP format or in plain-text XML (.unl) t
 >
 > This is considered "beta" as in "it works for me but might have bugs or things don't work as you expect them to work."  So, use with care and at your own risk.
 
+### Online conversion
+
+The easiest way to convert files into CML format is to use the online converter provided [here](https://www.marcuscom.com/eve2cml/).  Simply upload your UNL or ZIP files and the tool will convert them for you, using eve2cml package in the background.
+
+### Installation
+
+eve2cml requires Python 3, it has been tested with 3.9, 3.10, 3.11 and 3.12.  You can either
+
+- use [pipx](https://github.com/pypa/pipx) to install it in an isolated environment:
+    ```
+    $ pipx install eve2cml
+      installed package eve2cml 0.1.0b4, installed using Python 3.10.12
+      These apps are now globally available
+        - eve2cml
+        done! ✨ 🌟 ✨
+
+    $ eve2cml --version
+    eve2cml 0.1.0b4
+
+    $
+    ```
+- pip-install it from PyPI by running `pip install eve2cml`. This will install the package into your current Python environment.  It is suggested to use a virtual or local environment instead of the system / global environment.
+
+### Development
+
+eve2cml uses [PDM](https://pdm-project.org/latest/) for dependency management.  At a minimum, Git Python3 and PDM must be installed as prerequisites.  After PDM is installed, you can run `pdm install` and a virtual environment will be created, all dependencies will be installed and a dev-version of eve2cml will be available.  Changes should be pushed into a new branch to a forked copy of the repository and result, eventually, in a pull request.
+
 ### Mapping node types
 
 There's some default node type mappings which can be dumped into a file using the `--dump` flag.
@@ -117,7 +144,7 @@ If you encounter any issues with the converter then please open a issue in the [
 
 There's a known issue with the maximum number of interfaces defined in the shipping node definitions for IOL and IOL-L2.  As for the released version of CML 2.7.0, the maximum number of interfaces is 16.  If you have topologies which use more interfaces (`Ethernet4/0` and up) then you need to add the additional interfaces to the node definition in CML (Tools -> Node and image definitions -> IOL / IOL-L2).  In the interface section, add the required interfaces and name them properly.  Don't forget to click "Update" at the bottom when done.
 
-This is likely fixed in the 2.7.1 release, once available.
+This is fixed in the 2.7.1 release, once available.
 
 The converter has now 32 interfaces defined in the mapper (`Ethernet0/0` to `Ethernet7/3`).
 
@@ -125,7 +152,7 @@ The converter has now 32 interfaces defined in the mapper (`Ethernet0/0` to `Eth
 
 There's a few things which are known to cause issues.  Some of them might be addressable by code changes in the converter and/or changes on the CML side of things.  And some might just not be possible at all.
 
-- Rotation of annotation only works for text.  Ellipses and rectangles don't support rotation on the CML side of things.  To be addressed in a future CML release
+- Rotation of annotation only works for text.  Ellipses and rectangles don't support rotation on the CML side of things.  To be addressed in a future CML release.
 - Text objects in EVE can have a background color.  The converter adds additional rectangles behind the text object in CML.  It "guesses" the size of these rectangles.  Those guesses are inaccurate.
 - Font (names) might not translate well.  I think there's a general issue with serif vs. sans-serif mapping.
 - Images (PNGs) as part of a topology are ignored as there's no representation for them in CML.

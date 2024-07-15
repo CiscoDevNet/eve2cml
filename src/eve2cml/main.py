@@ -130,6 +130,18 @@ def dump_as_text(out: io.TextIOWrapper, lab: Lab, dump_all: bool):
         out.write("\n")
 
 
+def centered_line_with_stars(name="", cols=80) -> str:
+    if len(name) == 0:
+        return "*" * cols
+    num_asterisks = cols - len(name) + 2
+    asterisks_each_side = num_asterisks // 2
+    asterisks_left = "*" * asterisks_each_side
+    asterisks_right = "*" * (
+        asterisks_each_side if num_asterisks % 2 == 0 else asterisks_each_side + 1
+    )
+    return f"{asterisks_left} {name} {asterisks_right}"
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Convert UNL/XML topologies to CML2 topologies"
@@ -190,12 +202,20 @@ def main():
             return dumper.represent_scalar("tag:yaml.org,2002:str", fixed_data)
 
         yaml.add_representer(str, yaml_multiline_string_pipe)
+
+        if args.stdout:
+            for lab in labs:
+                print(
+                    centered_line_with_stars(
+                        str(Path(lab.filename).with_suffix(".yaml"))
+                    )
+                )
+                sys.stdout.write(yaml.dump(lab.as_cml_dict(), sort_keys=False))
+                print(centered_line_with_stars())
+            return
+
         for lab in labs:
-            cml_filename = (
-                sys.stdout.fileno()
-                if args.stdout
-                else Path(lab.filename).with_suffix(".yaml")
-            )
+            cml_filename = Path(lab.filename).with_suffix(".yaml")
             with open(cml_filename, "w", encoding="utf-8") as cml_file:
                 cml_file.write(yaml.dump(lab.as_cml_dict(), sort_keys=False))
         return
