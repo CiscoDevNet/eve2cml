@@ -133,7 +133,7 @@ def dump_as_text(out: io.TextIOWrapper, lab: Lab, dump_all: bool):
 def centered_line_with_stars(name="", cols=80) -> str:
     if len(name) == 0:
         return "*" * cols
-    num_asterisks = cols - len(name) + 2
+    num_asterisks = cols - len(name) - 2
     asterisks_each_side = num_asterisks // 2
     asterisks_left = "*" * asterisks_each_side
     asterisks_right = "*" * (

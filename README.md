@@ -10,15 +10,16 @@ Convert EVE-NG topology files either in ZIP format or in plain-text XML (.unl) t
 >
 > This is considered "beta" as in "it works for me but might have bugs or things don't work as you expect them to work."  So, use with care and at your own risk.
 
-### Online conversion
+## Online conversion
 
-The easiest way to convert files into CML format is to use the online converter provided [here](https://www.marcuscom.com/eve2cml/).  Simply upload your UNL or ZIP files and the tool will convert them for you, using eve2cml package in the background.
+The easiest way to convert files into CML format is to use the online converter provided [here](https://www.marcuscom.com/eve2cml/).  Simply upload your UNL or ZIP files and the tool will convert them for you, using the eve2cml package in the background.
 
-### Installation
+## Installation
 
 eve2cml requires Python 3, it has been tested with 3.9, 3.10, 3.11 and 3.12.  You can either
 
 - use [pipx](https://github.com/pypa/pipx) to install it in an isolated environment:
+
     ```
     $ pipx install eve2cml
       installed package eve2cml 0.1.0b4, installed using Python 3.10.12
@@ -31,13 +32,14 @@ eve2cml requires Python 3, it has been tested with 3.9, 3.10, 3.11 and 3.12.  Yo
 
     $
     ```
+
 - pip-install it from PyPI by running `pip install eve2cml`. This will install the package into your current Python environment.  It is suggested to use a virtual or local environment instead of the system / global environment.
 
-### Development
+## Development
 
 eve2cml uses [PDM](https://pdm-project.org/latest/) for dependency management.  At a minimum, Git Python3 and PDM must be installed as prerequisites.  After PDM is installed, you can run `pdm install` and a virtual environment will be created, all dependencies will be installed and a dev-version of eve2cml will be available.  Changes should be pushed into a new branch to a forked copy of the repository and result, eventually, in a pull request.
 
-### Mapping node types
+## Mapping node types
 
 There's some default node type mappings which can be dumped into a file using the `--dump` flag.
 
@@ -60,9 +62,9 @@ After modification / adding more or different node type mappings to the exported
 Disclaimer:  There's certainly things out there which do not properly translate.  If you encounter anything then raise an issue in the issue tracker and I'll look into it.
 
 > [!NOTE]
-> It is possible to change node types when importing.  For example, you might want to change IOSv-L2 instances to IOLL2-XE instances by providing a custom import map.  However, this does **NOT** change the device configuration of the imported nodes.  So, if the configuration uses `GigabitEthernet0/4` in the original IOSv-L2 configuration then it is your responsibility to change this to `Ethernet1/0` for the configuration of the imported IOLL2-XE device.  This can be easily done via a sed script or using a text editor and global search and replace.  But this might be more involved depending on the original/target device type.  See the "Change configurations" section below for an example.
+> It is possible to change node types when importing.  For example, you might want to change IOSv-L2 instances to IOLL2-XE instances by providing a custom import map.  However, this does **NOT** change the device configuration of the imported nodes.  So, if the configuration uses `GigabitEthernet0/4` in the original IOSv-L2 configuration then it is your responsibility to change this to `Ethernet1/0` for the configuration of the imported IOLL2-XE device.  This can be easily done via a sed script or using a text editor and global search and replace.  But this might be more involved depending on the original/target device type.  See the [Change configurations](#change-configurations) section below for an example.
 
-### Usage
+## Usage
 
 ```
 $ eve2cml -h
@@ -89,7 +91,8 @@ Example: eve2cml exportedlabs.zip
 
 $
 ```
-### Change configurations
+
+## Change configurations
 
 With a custom mapper file, node types can be modified while importing.  For example, adding map entries like the following
 
@@ -107,6 +110,7 @@ With a custom mapper file, node types can be modified while importing.  For exam
 to the mapper will change all IOSv instances to IOL-XE instances and all IOSv-L2 instances to IOLL2-XE instances.  However, the day zero configuration files of those nodes will not be modified to match the now different interface names.  In this particular case, where most of the configuration between IOSv and IOL-XE is identical *except for the interface names*, a simple sed script can do the trick.  Here's how this can be done:
 
 1. create a sed script file with this content, filename `ios2iol-config`:
+
    ```plain
    s#GigabitEthernet0/0#Ethernet0/0#
    s#GigabitEthernet0/1#Ethernet0/1#
@@ -125,6 +129,7 @@ to the mapper will change all IOSv instances to IOL-XE instances and all IOSv-L2
    s#GigabitEthernet0/14#Ethernet3/2#
    s#GigabitEthernet0/15#Ethernet3/3#
    ```
+
 2. dump the default / built-in mapper into a file (`--dump` option)
 3. modify the mapper to include the changes outlined above
 2. convert the topology with the modified map file (`--mapper` option)
@@ -132,15 +137,15 @@ to the mapper will change all IOSv instances to IOL-XE instances and all IOSv-L2
 
 This will change all occurrences within the CML lab file from IOSv notation to IOL notation.
 
-### Contributing
+## Contributing
 
 If you have a more complete map file with additional or more specific node type mappings or if you have improved the code, fixed a bug or a typo or added a new feature then I more than welcome you to raise a pull request!
 
-### Issues
+## Issues
 
 If you encounter any issues with the converter then please open a issue in the [GitHub issue tracker](https://github.com/CiscoDevNet/eve2cml/issues).
 
-#### IOL interfaces
+### IOL interfaces
 
 There's a known issue with the maximum number of interfaces defined in the shipping node definitions for IOL and IOL-L2.  As for the released version of CML 2.7.0, the maximum number of interfaces is 16.  If you have topologies which use more interfaces (`Ethernet4/0` and up) then you need to add the additional interfaces to the node definition in CML (Tools -> Node and image definitions -> IOL / IOL-L2).  In the interface section, add the required interfaces and name them properly.  Don't forget to click "Update" at the bottom when done.
 
@@ -148,7 +153,7 @@ This is fixed in the 2.7.1 release, once available.
 
 The converter has now 32 interfaces defined in the mapper (`Ethernet0/0` to `Ethernet7/3`).
 
-#### Known issues
+### Known issues
 
 There's a few things which are known to cause issues.  Some of them might be addressable by code changes in the converter and/or changes on the CML side of things.  And some might just not be possible at all.
 

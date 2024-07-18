@@ -1,11 +1,19 @@
 import eve2cml.main
+import pytest
 
 
-def test_centered_line():
-    # Test when data is None
-    full = eve2cml.main.centered_line_with_stars()
-    assert len(full) == 80
-
-    partial = eve2cml.main.centered_line_with_stars("this")
-    assert len(full) == 80
-    assert " this " in partial
+@pytest.mark.parametrize(
+    "case",
+    [
+        {"name": "none", "text": "", "cols": 80},
+        {"name": "even", "text": "even", "cols": 80},
+        {"name": "odd", "text": "oddoddodd", "cols": 80},
+        {"name": "oddlen", "text": "even", "cols": 79},
+    ],
+)
+def test_centered_line(case):
+    name = case["text"]
+    result = eve2cml.main.centered_line_with_stars(name)
+    assert len(result) == 80
+    if len(name) > 0:
+        assert f" {name} " in result
