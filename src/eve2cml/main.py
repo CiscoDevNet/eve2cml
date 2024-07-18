@@ -136,9 +136,9 @@ def centered_line_with_stars(name="", cols=80) -> str:
     num_asterisks = cols - len(name) - 2
     asterisks_each_side = num_asterisks // 2
     asterisks_left = "*" * asterisks_each_side
-    asterisks_right = "*" * (
-        asterisks_each_side if num_asterisks % 2 == 0 else asterisks_each_side + 1
-    )
+    asterisks_right = asterisks_left
+    if num_asterisks % 2 != 0:
+        asterisks_right += "*"
     return f"{asterisks_left} {name} {asterisks_right}"
 
 
