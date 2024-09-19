@@ -13,8 +13,6 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
     strategy:
       fail-fast: false
       matrix:
@@ -27,6 +25,8 @@ jobs:
         uses: astral-sh/setup-uv@v2
 
       - name: Set up Python ${{ matrix.python-version }}
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
