@@ -1,4 +1,5 @@
 import pytest
+
 from eve2cml.eve.textobject import rgb_to_hex
 
 

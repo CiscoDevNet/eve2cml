@@ -1,5 +1,6 @@
-import eve2cml.main
 import pytest
+
+import eve2cml.main
 
 
 @pytest.mark.parametrize(

@@ -227,8 +227,8 @@ class TextObject:
                         "border_radius": 0,
                         "border_style": "",
                         "color": background_color,
-                        # can't rotate a rectangle!!!
-                        # "rotation": self.rotation,
+                        # rotation works with 2.8+
+                        "rotation": self.rotation,
                         "thickness": 1,
                         "type": "rectangle",
                         "x1": self.left,
@@ -250,6 +250,8 @@ class TextObject:
                     "border_style": summary.get("bla", ""),
                     "color": color_convert(summary.get("fill", GRAY)),
                     "thickness": max(int(float(summary.get("stroke-width", "1"))), 1),
+                    # rotation works with 2.8+
+                    "rotation": self.rotation,
                     "type": "rectangle",
                     "x1": self.left,
                     "y1": self.top,
@@ -270,6 +272,8 @@ class TextObject:
                     "border_style": summary.get("bla", ""),
                     "color": color_convert(summary.get("stroke", GRAY)),
                     "thickness": max(int(float(summary.get("stroke-width", "1"))), 1),
+                    # rotation works with 2.8+
+                    "rotation": self.rotation,
                     "type": "ellipse",
                     "x1": rx + self.left,
                     "y1": ry + self.top,
@@ -279,5 +283,5 @@ class TextObject:
                 }
             ]
         else:
-            _LOGGER.warn("Object type %s", self.obj_type)
+            _LOGGER.warning("Object type %s", self.obj_type)
         return []
