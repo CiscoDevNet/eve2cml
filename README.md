@@ -20,7 +20,7 @@ eve2cml requires Python 3, it has been tested with 3.9, 3.10, 3.11 and 3.12.  Yo
 
 - use [pipx](https://github.com/pypa/pipx) to install it in an isolated environment:
 
-    ```
+    ```plain
     $ pipx install eve2cml
       installed package eve2cml 0.1.0b4, installed using Python 3.10.12
       These apps are now globally available
@@ -37,7 +37,15 @@ eve2cml requires Python 3, it has been tested with 3.9, 3.10, 3.11 and 3.12.  Yo
 
 ## Development
 
-eve2cml uses [PDM](https://pdm-project.org/latest/) for dependency management.  At a minimum, Git Python3 and PDM must be installed as prerequisites.  After PDM is installed, you can run `pdm install` and a virtual environment will be created, all dependencies will be installed and a dev-version of eve2cml will be available.  Changes should be pushed into a new branch to a forked copy of the repository and result, eventually, in a pull request.
+eve2cml uses [UV](https://docs.astral.sh/uv/) for dependency management.  At a minimum, Git, Python3 and UV must be installed as prerequisites.  After UV is installed, you can run `make sync` and a virtual environment will be created, all dependencies will be installed and a dev-version of eve2cml will be available.  Changes should be pushed into a new branch to a forked copy of the repository and result, eventually, in a pull request.
+
+There's a couple of make targets available which help with developing eve2cml:
+
+- `make covo`, shows code coverage, opens in a browser window
+- `make test`, runs all available tests
+- `make format`, formats the code with ruff
+- `make build`, builds distribution packages in `dist`
+- `make clean`, cleans up created files (also `mrproper`, which deletes the .venv)
 
 ## Mapping node types
 
@@ -66,7 +74,7 @@ Disclaimer:  There's certainly things out there which do not properly translate.
 
 ## Usage
 
-```
+```plain
 $ eve2cml -h
 usage: eve2cml [-h] [-V] [--level {debug,info,warning,error,critical}] [--stdout] [--nocolor] [--dump] [--mapper MAPPER] [-t] [--all] file_or_zip [file_or_zip ...]
 
@@ -132,8 +140,8 @@ to the mapper will change all IOSv instances to IOL-XE instances and all IOSv-L2
 
 2. dump the default / built-in mapper into a file (`--dump` option)
 3. modify the mapper to include the changes outlined above
-2. convert the topology with the modified map file (`--mapper` option)
-3. run `sed -f ios2iol-config lab.yaml >lab_with_configs_changed.yaml`
+4. convert the topology with the modified map file (`--mapper` option)
+5. run `sed -f ios2iol-config lab.yaml >lab_with_configs_changed.yaml`
 
 This will change all occurrences within the CML lab file from IOSv notation to IOL notation.
 
@@ -157,7 +165,6 @@ The converter has now 32 interfaces defined in the mapper (`Ethernet0/0` to `Eth
 
 There's a few things which are known to cause issues.  Some of them might be addressable by code changes in the converter and/or changes on the CML side of things.  And some might just not be possible at all.
 
-- Rotation of annotation only works for text.  Ellipses and rectangles don't support rotation on the CML side of things.  To be addressed in a future CML release.
 - Text objects in EVE can have a background color.  The converter adds additional rectangles behind the text object in CML.  It "guesses" the size of these rectangles.  Those guesses are inaccurate.
 - Font (names) might not translate well.  I think there's a general issue with serif vs. sans-serif mapping.
 - Images (PNGs) as part of a topology are ignored as there's no representation for them in CML.

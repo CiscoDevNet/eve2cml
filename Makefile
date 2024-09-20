@@ -1,4 +1,4 @@
-.PHONY: build check clean cov covo format mrproper testreqs
+.PHONY: build check clean cov covo format mrproper sync test
 
 build:
 	uv build
@@ -11,7 +11,7 @@ clean:
 	find . -depth -type d -name __pycache__ -not -path "./.venv/*" -exec rm -rf {} \;
 
 mrproper: clean
-	rm -rf .
+	rm -rf .venv
 
 cov:
 	uv run coverage run -m pytest
@@ -22,12 +22,15 @@ covo: cov
 	open htmlcov/index.html
 
 check:
-	uv run mypy src
-	uv run ruff check --fix
+	uv run mypy --check-untyped-def src
+	uv run ruff check
 
 format: check
 	uv run ruff format
 
-testreqs:
-	uv pip list --exclude-editable --format freeze >tests/requirements.txt
+sync:
+	uv sync --dev --frozen
+
+test:
+	uv run pytest
 

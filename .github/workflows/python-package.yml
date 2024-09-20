@@ -32,9 +32,10 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      # - name: Check code
-      #   run: |
-      #     make check
+      - name: Check code
+        run: |
+          uv run mypy --check-untyped-def src
+          uv run ruff check
 
       - name: Run tests and check coverage
         run: |
