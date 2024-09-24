@@ -5,6 +5,9 @@
 #
 # For more information see:
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+#
+# For using output and referencing it in other steps
+# https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions#58035262
 
 name: Python package
 
@@ -20,6 +23,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Print the ref
+        shell: bash
+        run: echo "${GITHUB_REF}"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v2
