@@ -1,11 +1,13 @@
+# publish to pypi
+# push:
+#   branches:
+#     - main
+#   tags:
+#     - "0.1.?"
+
 name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
 
-on:
-  push:
-    branches:
-      - main
-    # tags:
-    #   - "0.1.?"
+on: [push]
 
 jobs:
   build:
