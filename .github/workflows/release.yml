@@ -3,9 +3,9 @@ name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
 on:
   push:
     branches:
-      - dev
+      - main
     tags:
-      - "*"
+      - "0.1.?"
 
 jobs:
   build:
@@ -41,7 +41,7 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-          TWINE_REPOSITORY: testpypi
+          TWINE_REPOSITORY: pypi
           #
         run: uvx twine upload dist/*
 
