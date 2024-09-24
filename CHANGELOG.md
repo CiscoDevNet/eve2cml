@@ -1,5 +1,10 @@
 # CHANGELOG
 
+- v0.1.0b6
+  - replace pdm with uv
+  - updated all github actions to newer versions
+  - allow more annotations to be rotated (with 2.8)
+  - updated documentation
 - v0.1.0b5
   - updated dependencies
   - added installation instructions to README

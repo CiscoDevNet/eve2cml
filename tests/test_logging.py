@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+
 from eve2cml.log import initialize_logging
 
 

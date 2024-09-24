@@ -1,18 +1,19 @@
 [project]
 name = "eve2cml"
-dynamic = [ "version" ]
+dynamic = ["version"]
 description = "A CLI tool to convert EVE-NG XML topology data into CML2 topology data as YAML"
-authors = [
-    {name = "Ralph Schmieder", email = "rschmied@cisco.com"},
-]
-dependencies = [
-    "beautifulsoup4>=4.12.3",
-    "pyyaml>=6.0.1",
-]
+authors = [{ name = "Ralph Schmieder", email = "rschmied@cisco.com" }]
+dependencies = ["beautifulsoup4>=4.12.3", "pyyaml>=6.0.1"]
 requires-python = ">=3.8"
 readme = "README.md"
-license = {text = "MIT"}
-keywords = ["automation", "tools", "simulation", "virtualization", "network-programming"]
+license = { text = "MIT" }
+keywords = [
+  "automation",
+  "tools",
+  "simulation",
+  "virtualization",
+  "network-programming",
+]
 
 classifiers = [
   # How mature is this project? Common values are
@@ -43,51 +44,28 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://developer.cisco.com/modeling-labs"
-# Documentation = "https://readthedocs.org"
 Repository = "https://github.com/ciscodevnet/eve2cml"
 Issues = "https://github.com/ciscodevnet/eve2cml/issues"
 Changelog = "https://github.com/ciscodevnet/eve2cml/blob/master/CHANGELOG.md"
+# Documentation = "https://readthedocs.org"
 
 [project.scripts]
 eve2cml = "eve2cml.main:main"
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-
-[tool.pdm]
-distribution = true
-
-[tool.pdm.version]
-source = "scm"
-write_to = "eve2cml/_version.py"
-write_template = "__version__ = '{}'"
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "mypy>=1.8.0",
-    "pytest>=8.0.2",
-    "pytest-cov>=4.1.0",
-    "ruff>=0.3.2",
-    "types-beautifulsoup4>=4.12.0.20240229",
-    "types-PyYAML>=6.0.12.20240311",
-]
-
 [tool.ruff]
 lint.pydocstyle.convention = "google"
 lint.select = [
-    "B", # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "E", # pycodestyle - Error
-    "F", # Pyflakes
-    "I", # isort
-    "W", # pycodestyle - Warning
-    "UP", # pyupgrade
+  "B",  # flake8-bugbear
+  "C4", # flake8-comprehensions
+  "E",  # pycodestyle - Error
+  "F",  # Pyflakes
+  "I",  # isort
+  "W",  # pycodestyle - Warning
+  "UP", # pyupgrade
 ]
 lint.ignore = [
-    "E501", # line-too-long
-    "W191", # tab-indentation
+  "E501", # line-too-long
+  "W191", # tab-indentation
 ]
 include = ["**/*.py", "**/*.pyi", "**/pyproject.toml"]
 
@@ -95,10 +73,27 @@ include = ["**/*.py", "**/*.pyi", "**/pyproject.toml"]
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"
-testpaths = [
-    "tests",
-    "integration",
-]
+testpaths = ["tests", "integration"]
 
 [tool.coverage.run]
-source = [ "src" ]
+source = ["src"]
+
+[tool.uv]
+dev-dependencies = [
+  "mypy>=1.11.2",
+  "pytest>=8.3.3",
+  "pytest-cov>=5.0.0",
+  "ruff>=0.6.5",
+  "types-beautifulsoup4>=4.12.0.20240907",
+  "types-pyyaml>=6.0.12.20240917",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/eve2cml/_version.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["tests"]

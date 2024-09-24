@@ -1,8 +1,9 @@
 import io
 from pathlib import Path
 
-import eve2cml.main
 import pytest
+
+import eve2cml.main
 
 
 @pytest.mark.parametrize(
