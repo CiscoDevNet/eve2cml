@@ -37,7 +37,7 @@ eve2cml requires Python 3, it has been tested with 3.9, 3.10, 3.11 and 3.12.  Yo
 
 ## Development
 
-eve2cml uses [UV](https://docs.astral.sh/uv/) for dependency management.  At a minimum, Git, Python3 and UV must be installed as prerequisites.  After UV is installed, you can run `make sync` and a virtual environment will be created, all dependencies will be installed and a dev-version of eve2cml will be available.  Changes should be pushed into a new branch to a forked copy of the repository and result, eventually, in a pull request.
+eve2cml uses [UV](https://docs.astral.sh/uv/) to manage Python related things like dependencies, virtual environments and Python installations.  At a minimum, Git and UV must be installed as prerequisites.  After UV is installed, it can install Python for you (`uv python install...` and you can run `make sync` and a virtual environment will be created, all dependencies will be installed and a dev-version of eve2cml will be available.  Changes should be pushed into a new branch to a forked copy of the repository and result, eventually, in a pull request.
 
 There's a couple of make targets available which help with developing eve2cml:
 
