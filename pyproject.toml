@@ -69,7 +69,6 @@ lint.ignore = [
 ]
 include = ["**/*.py", "**/*.pyi", "**/pyproject.toml"]
 
-
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"
@@ -79,6 +78,7 @@ testpaths = ["tests", "integration"]
 source = ["src"]
 
 [tool.uv]
+cache-keys = [{ git = true }]
 dev-dependencies = [
   "mypy>=1.11.2",
   "pytest>=8.3.3",

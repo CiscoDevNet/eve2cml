@@ -108,7 +108,7 @@ toml = [
 
 [[package]]
 name = "eve2cml"
-version = "0.1.0"
+version = "0.1.0+1.g281941e.dirty"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
