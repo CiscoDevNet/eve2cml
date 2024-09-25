@@ -36,7 +36,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Create the version file
-        run: ./version.sh
+        run: |
+          ./version.sh
+          cat src/eve2cml/_version.py
 
       - name: Install the project
         run: |

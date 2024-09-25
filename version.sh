@@ -2,6 +2,7 @@
 
 # Original Git-derived version identifier
 version=$(git describe --always --tags --dirty --long)
+echo "#${version}#"
 
 # Check if the version contains Git metadata (commits and commit hash)
 if [[ "$version" =~ ([0-9]+\.[0-9]+\.[0-9]+)(-([0-9]+)-g([0-9a-f]+)(-dirty)?)? ]]; then
@@ -22,8 +23,7 @@ if [[ "$version" =~ ([0-9]+\.[0-9]+\.[0-9]+)(-([0-9]+)-g([0-9a-f]+)(-dirty)?)? ]
             pep440_version="${pep440_version}.dirty"
         fi
     fi
-
 else
-    pep440_version = "unknown"
+    pep440_version="0.0.0+unknown"
 fi
 echo "__version__ = \"$pep440_version\"" >src/eve2cml/_version.py
