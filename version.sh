@@ -2,7 +2,6 @@
 
 # Original Git-derived version identifier
 version=$(git describe --always --tags --dirty --long)
-echo "#${version}#"
 
 # Check if the version contains Git metadata (commits and commit hash)
 if [[ "$version" =~ ([0-9]+\.[0-9]+\.[0-9]+)(-([0-9]+)-g([0-9a-f]+)(-dirty)?)? ]]; then

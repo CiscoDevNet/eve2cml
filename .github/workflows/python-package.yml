@@ -43,8 +43,7 @@ jobs:
           cat src/eve2cml/_version.py
 
       - name: Install the project
-        run: |
-          uv sync --all-extras --dev
+        run: uv sync --all-extras --dev
 
       - name: Check code
         run: |

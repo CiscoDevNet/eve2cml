@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- v0.1.1
+  - updated release workflows, no functional difference to 0.1.0
 - v0.1.0
   - replace pdm with uv
   - updated all github actions to newer versions
