@@ -11,7 +11,7 @@ if [[ "$version" =~ ([0-9]+\.[0-9]+\.[0-9]+)(-([0-9]+)-g([0-9a-f]+)(-dirty)?)? ]
     dirty="${BASH_REMATCH[5]}"        # -dirty (optional)
 
     # If there's no Git metadata, the version is already PEP 440 compliant
-    if [[ -z "$commit_count" ]]; then
+    if [[ -z "$commit_count" || "$commit_count" == "0" ]]; then
         pep440_version="$core_version"
     else
         # Construct the PEP 440 compliant version
