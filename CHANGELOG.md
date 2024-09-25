@@ -1,10 +1,12 @@
 # CHANGELOG
 
-- v0.1.0b6
+- v0.1.0
   - replace pdm with uv
   - updated all github actions to newer versions
+  - automate the PyPI release process
   - allow more annotations to be rotated (with 2.8)
   - updated documentation
+  - a small/cosmetic fix around the centered line output
 - v0.1.0b5
   - updated dependencies
   - added installation instructions to README
