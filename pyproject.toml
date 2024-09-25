@@ -69,7 +69,6 @@ lint.ignore = [
 ]
 include = ["**/*.py", "**/*.pyi", "**/pyproject.toml"]
 
-
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"
@@ -87,7 +86,6 @@ dev-dependencies = [
   "ruff>=0.6.5",
   "types-beautifulsoup4>=4.12.0.20240907",
   "types-pyyaml>=6.0.12.20240917",
-  "setuptools-scm>=8.1.0",
 ]
 
 [build-system]

@@ -1,6 +1,7 @@
 .PHONY: build check clean cov covo format mrproper sync test
 
 build:
+	$(shell ./version.sh)
 	uv build
 
 clean:
