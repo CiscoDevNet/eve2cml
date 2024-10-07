@@ -95,5 +95,5 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 path = "src/eve2cml/_version.py"
 
-[tool.hatch.build.targets.sdist]
-exclude = ["tests"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/eve2cml"]
