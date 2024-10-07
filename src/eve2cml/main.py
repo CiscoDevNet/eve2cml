@@ -182,7 +182,7 @@ def main():
         return
 
     if args.all and not args.text:
-        _LOGGER.warn("--all is only relevant with text output, ignoring")
+        _LOGGER.warning("--all is only relevant with text output, ignoring")
 
     mapper = Eve2CMLmapper().load(args.mapper)
     labs: List[Lab] = []
