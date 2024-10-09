@@ -1,7 +1,7 @@
 import logging
 import re
 from functools import cached_property
-from typing import Any, Dict, List
+from typing import Any
 from xml.etree.ElementTree import Element
 
 from bs4 import BeautifulSoup
@@ -86,7 +86,7 @@ class TextObject:
             return {}
 
         style = self._data.div.find_all(has_style)
-        styles: Dict[str, str] = {}
+        styles: dict[str, str] = {}
         for el in style:
             el_style = parse_style(el["style"])
             styles = {**styles, **el_style}
@@ -174,8 +174,8 @@ class TextObject:
         return f"Text ID: {self.id}, Name: {self.name}, Type: {self.obj_type}, Strings: {self.strings}, Data: {self.prettify()}, Pos: {self.left}/{self.top}/{self.z_index}"
 
     @classmethod
-    def parse(cls, lab: Element, path: str) -> List["TextObject"]:
-        text_objects: List[TextObject] = []
+    def parse(cls, lab: Element, path: str) -> list["TextObject"]:
+        text_objects: list[TextObject] = []
         for text_elem in lab.findall(path):
             text_object = TextObject(
                 id=int(text_elem.attrib.get("id", 0)),
@@ -188,7 +188,7 @@ class TextObject:
             text_objects.append(text_object)
         return text_objects
 
-    def as_cml_annotations(self) -> List[Dict[str, Any]]:
+    def as_cml_annotations(self) -> list[dict[str, Any]]:
         if self.obj_type == "text":
             if not len(self.strings) > 0:
                 _LOGGER.info("Not a real text object, ignoring")

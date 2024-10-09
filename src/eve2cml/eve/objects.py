@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any
 from xml.etree.ElementTree import Element
 
 from .config import Config
@@ -13,10 +13,10 @@ _LOGGER = logging.getLogger(__name__)
 class Objects:
     def __init__(
         self,
-        tasks: List[Task],
-        configs: List[Config],
-        configsets: List[ConfigSet],
-        textobjects: List[TextObject],
+        tasks: list[Task],
+        configs: list[Config],
+        configsets: list[ConfigSet],
+        textobjects: list[TextObject],
     ):
         self.tasks = tasks
         self.configs = configs
@@ -55,8 +55,8 @@ class Objects:
             TextObject.parse(this, "textobjects/textobject"),
         )
 
-    def cml_annotations(self) -> List[Dict[str, Any]]:
-        annotations: List[Dict[str, Any]] = []
+    def cml_annotations(self) -> list[dict[str, Any]]:
+        annotations: list[dict[str, Any]] = []
         for object in self.textobjects:
             annotation_list = object.as_cml_annotations()
             for annotation in annotation_list:

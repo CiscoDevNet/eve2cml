@@ -1,4 +1,3 @@
-from typing import List
 from xml.etree.ElementTree import Element
 
 
@@ -21,8 +20,8 @@ class Network:
         return f"ID: {self.id}, Name: {self.name}, Type: {self.obj_type}"
 
     @classmethod
-    def parse(cls, lab: Element) -> List["Network"]:
-        networks: List[Network] = []
+    def parse(cls, lab: Element) -> list["Network"]:
+        networks: list[Network] = []
         for network_elem in lab.findall(".//networks/network"):
             network = Network(
                 id=int(network_elem.attrib.get("id", 0)),

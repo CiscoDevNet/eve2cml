@@ -1,4 +1,3 @@
-from typing import List
 from xml.etree.ElementTree import Element
 
 
@@ -54,12 +53,12 @@ class Interface:
 
     @classmethod
     def parse(
-        cls, node_id: int, obj_type: str, elem: List[Element]
-    ) -> List["Interface"]:
+        cls, node_id: int, obj_type: str, elem: list[Element]
+    ) -> list["Interface"]:
         # special treatment for slots when type is IOL
         no_iol = obj_type != "iol"
 
-        interfaces: List[Interface] = []
+        interfaces: list[Interface] = []
         for interface_elem in elem:
             id = int(interface_elem.attrib.get("id", "unknown"))
             interface = Interface(

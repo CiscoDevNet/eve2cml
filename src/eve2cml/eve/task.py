@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from xml.etree.ElementTree import Element
 
 from .decode import decode_data
@@ -16,8 +16,8 @@ class Task:
         # return f"Task {self.id}, Name: {self.name}, Type: {self.obj_type}"
 
     @classmethod
-    def parse(cls, lab: Element, path: str) -> List["Task"]:
-        tasks: List[Task] = []
+    def parse(cls, lab: Element, path: str) -> list["Task"]:
+        tasks: list[Task] = []
         for task_elem in lab.findall(path):
             task = Task(
                 id=int(task_elem.attrib.get("id", 0)),
