@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "A CLI tool to convert EVE-NG XML topology data into CML2 topology data as YAML"
 authors = [{ name = "Ralph Schmieder", email = "rschmied@cisco.com" }]
 dependencies = ["beautifulsoup4>=4.12.3", "pyyaml>=6.0.1"]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 readme = "README.md"
 license = { text = "MIT" }
 keywords = [
@@ -40,6 +40,7 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
 ]
 
 [project.urls]

@@ -1,7 +1,7 @@
 # CHANGELOG
 
 - v0.1.2
-  - removed couple of files from .gitignore to create complete wheels.0
+  - removed couple of files from .gitignore to create complete wheels
   - 0.1.1.post0, 0.1.1, 0.1.0 were broken because of this
 - v0.1.1
   - updated release workflows, no functional difference to 0.1.0

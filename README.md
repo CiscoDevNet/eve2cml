@@ -22,13 +22,13 @@ eve2cml requires Python 3, it has been tested with 3.9, 3.10, 3.11 and 3.12.  Yo
 
     ```plain
     $ pipx install eve2cml
-      installed package eve2cml 0.1.0b4, installed using Python 3.10.12
+      installed package eve2cml 0.1.2, installed using Python 3.10.12
       These apps are now globally available
         - eve2cml
         done! ✨ 🌟 ✨
 
     $ eve2cml --version
-    eve2cml 0.1.0b4
+    eve2cml 0.1.2
 
     $
     ```
