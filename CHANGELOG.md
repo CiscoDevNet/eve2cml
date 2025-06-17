@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- v0.1.4
+  no functional changes, re-release with updated GH actions
 - v0.1.3
   - fix node definition mapping for specific image definitions
   - make image definitions case insensitive
