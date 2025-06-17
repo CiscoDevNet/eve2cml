@@ -79,7 +79,7 @@ class Eve2CMLmapper:
     def node_def(self, obj_type: str, template: str, image: str) -> CMLdef:
         lookup = f"{obj_type}:{template}"
         if len(image) > 0:
-            lookup += f"{lookup}:{image}"
+            lookup = f"{lookup}:{image}".lower()
         found = self.map.get(lookup)
         if not found:
             # special case for non-template images like IOL or Docker

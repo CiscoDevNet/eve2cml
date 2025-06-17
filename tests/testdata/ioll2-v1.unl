@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<lab name="converter" version="1" scripttimeout="300" countdown="0" linkwidth="2" lock="0" grid="1" sat="-1">
+  <topology>
+    <nodes>
+      <node id="1" name="SW01" type="iol" template="iol" image="i86bi_linux_l2-advipservicesk9-ms.high_iron_20170202.bin" ethernet="1" nvram="1024" ram="1024" serial="0" keepalive="0" delay="0" sat="-1" icon="Router-2D-Gen-White-S.svg" config="0" left="594" top="210"/>
+    </nodes>
+  </topology>
+</lab>

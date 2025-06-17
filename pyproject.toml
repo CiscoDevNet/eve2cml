@@ -88,6 +88,7 @@ dev-dependencies = [
   "types-beautifulsoup4>=4.12.0.20240907",
   "types-pyyaml>=6.0.12.20240917",
   "pytest-mock>=3.14.0",
+  "pudb>=2025.1",
 ]
 
 [build-system]
