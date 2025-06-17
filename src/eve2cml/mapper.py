@@ -3,7 +3,7 @@ import logging
 import sys
 from importlib.resources import files
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import yaml
 from yaml.parser import ParserError
@@ -32,9 +32,9 @@ class CMLdef:
 
 class Eve2CMLmapper:
     def __init__(self):
-        self.map: Dict[str, CMLdef] = {}
+        self.map: dict[str, CMLdef] = {}
         self.unknown_type: str = ""
-        self.interface_lists: Dict[str, List[str]] = {}
+        self.interface_lists: dict[str, list[str]] = {}
 
     def as_dict(self):
         return {
@@ -79,7 +79,7 @@ class Eve2CMLmapper:
     def node_def(self, obj_type: str, template: str, image: str) -> CMLdef:
         lookup = f"{obj_type}:{template}"
         if len(image) > 0:
-            lookup += f"{lookup}:{image}"
+            lookup = f"{lookup}:{image}".lower()
         found = self.map.get(lookup)
         if not found:
             # special case for non-template images like IOL or Docker

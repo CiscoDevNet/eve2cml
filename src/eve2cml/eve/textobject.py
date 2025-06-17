@@ -1,10 +1,10 @@
 import logging
 import re
 from functools import cached_property
-from typing import Any, Dict, List
+from typing import Any, Optional
 from xml.etree.ElementTree import Element
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 
 from .decode import decode_data
 
@@ -34,7 +34,7 @@ def rgb_to_hex(rgb_string):
         for value in values:
             if value < 0 or value > 255:
                 raise ValueError
-        return f'#{"".join([f"{int(v):02x}" for v in values])}'.upper()
+        return f"#{''.join([f'{int(v):02x}' for v in values])}".upper()
     raise ValueError
 
 
@@ -59,8 +59,8 @@ class TextObject:
         self.id = id
         self.name = name
         self.obj_type = obj_type
-        self._data = None
-        self._div = None
+        self._data: Optional[BeautifulSoup] = None
+        self._div: Optional[ResultSet[Any]] = None
         self._div_style = None
         if data:
             self.data = data
@@ -86,7 +86,7 @@ class TextObject:
             return {}
 
         style = self._data.div.find_all(has_style)
-        styles: Dict[str, str] = {}
+        styles: dict[str, str] = {}
         for el in style:
             el_style = parse_style(el["style"])
             styles = {**styles, **el_style}
@@ -174,8 +174,8 @@ class TextObject:
         return f"Text ID: {self.id}, Name: {self.name}, Type: {self.obj_type}, Strings: {self.strings}, Data: {self.prettify()}, Pos: {self.left}/{self.top}/{self.z_index}"
 
     @classmethod
-    def parse(cls, lab: Element, path: str) -> List["TextObject"]:
-        text_objects: List[TextObject] = []
+    def parse(cls, lab: Element, path: str) -> list["TextObject"]:
+        text_objects: list[TextObject] = []
         for text_elem in lab.findall(path):
             text_object = TextObject(
                 id=int(text_elem.attrib.get("id", 0)),
@@ -188,7 +188,7 @@ class TextObject:
             text_objects.append(text_object)
         return text_objects
 
-    def as_cml_annotations(self) -> List[Dict[str, Any]]:
+    def as_cml_annotations(self) -> list[dict[str, Any]]:
         if self.obj_type == "text":
             if not len(self.strings) > 0:
                 _LOGGER.info("Not a real text object, ignoring")

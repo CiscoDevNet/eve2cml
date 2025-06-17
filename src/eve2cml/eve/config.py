@@ -1,4 +1,3 @@
-from typing import List
 from xml.etree.ElementTree import Element
 
 from .decode import decode_data
@@ -22,8 +21,8 @@ class Config:
         return f"Config ID: {self.id}, Data: {self.data}"
 
     @classmethod
-    def parse(cls, lab: Element, path) -> List["Config"]:
-        configs: List[Config] = []
+    def parse(cls, lab: Element, path) -> list["Config"]:
+        configs: list[Config] = []
         for config_elem in lab.findall(path):
             config = Config(
                 id=int(config_elem.attrib.get("id", 0)), data=config_elem.text or ""

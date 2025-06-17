@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from ..mapper import Eve2CMLmapper
 from .interface import Interface
@@ -67,11 +67,11 @@ class Lab:
         self.mapper = mapper
         self.filename = filename
 
-        self._links: List[Dict[str, Any]] = []
+        self._links: list[dict[str, Any]] = []
         self._current_link_id = 0
 
     def as_cml_dict(self):
-        result: Dict[str, Any] = {}
+        result: dict[str, Any] = {}
         result["lab"] = {
             "notes": self.description,
             "description": f"Imported from {self.filename} via eve2cml converter",
@@ -95,8 +95,8 @@ class Lab:
     def __str__(self):
         return f"Lab: {self.name}, Version: {self.version}, Script Timeout: {self.scripttimeout}, Countdown: {self.countdown}, Lock: {self.lock}, SAT: {self.sat}"
 
-    def _network_ifaces(self, network_id: int) -> List[Interface]:
-        interfaces: List[Interface] = []
+    def _network_ifaces(self, network_id: int) -> list[Interface]:
+        interfaces: list[Interface] = []
         for node in self.topology.nodes:
             for iface in node.interfaces:
                 if iface.network_id == network_id:
@@ -105,8 +105,8 @@ class Lab:
 
     def _connect_internal_network(
         self, ums_node_id: int, network_id: int, name: str
-    ) -> List[CMLlink]:
-        found_ids: List[Tuple[int, int]] = []
+    ) -> list[CMLlink]:
+        found_ids: list[tuple[int, int]] = []
         for node in self.topology.nodes:
             for iface in node.interfaces:
                 if iface.network_id == network_id:
@@ -173,7 +173,7 @@ class Lab:
             self._links.append(link.as_cml_dict(self._current_link_id))
             self._current_link_id += 1
 
-    def cml_links(self) -> List[Dict[str, Any]]:
+    def cml_links(self) -> list[dict[str, Any]]:
         for network in self.topology.networks:
             _LOGGER.info("Processing network %d, %s", network.id, network.name)
             ifcelist = self._network_ifaces(network.id)

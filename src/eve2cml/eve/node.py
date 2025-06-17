@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 from xml.etree.ElementTree import Element
 
 from . import Interface
@@ -15,7 +15,7 @@ class Node:
         self,
         id: int,
         name: str,
-        interfaces: List[Interface],
+        interfaces: list[Interface],
         obj_type="",
         template="",
         image="",
@@ -70,7 +70,7 @@ class Node:
     def as_cml_dict(self, node_id: int, lab: "Lab"):
         nd_map = lab.mapper.node_def(self.obj_type, self.template, self.image)
 
-        temp_list: List[Interface] = []
+        temp_list: list[Interface] = []
         prev_idx = 0
         prev_slot = 0
         _LOGGER.debug(self.interfaces)
@@ -148,8 +148,8 @@ class Node:
         }
 
     @classmethod
-    def parse(cls, lab: Element) -> List["Node"]:
-        nodes: List[Node] = []
+    def parse(cls, lab: Element) -> list["Node"]:
+        nodes: list[Node] = []
         for node_elem in lab.findall(".//node"):
             id = int(node_elem.attrib.get("id", 0))
             obj_type = node_elem.attrib.get("type", "unknown")

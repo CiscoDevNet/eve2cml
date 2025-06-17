@@ -5,7 +5,6 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
-from typing import List
 
 import yaml
 
@@ -60,8 +59,8 @@ def convert_file(content: str, filename: str, mapper: Eve2CMLmapper) -> Lab:
     return lab
 
 
-def convert_files(file_or_zip: str, mapper: Eve2CMLmapper) -> List[Lab]:
-    lab: List[Lab] = []
+def convert_files(file_or_zip: str, mapper: Eve2CMLmapper) -> list[Lab]:
+    lab: list[Lab] = []
     if zipfile.is_zipfile(file_or_zip):
         with zipfile.ZipFile(file_or_zip, "r") as zip_file:
             for file_info in zip_file.infolist():
@@ -185,7 +184,7 @@ def main():
         _LOGGER.warning("--all is only relevant with text output, ignoring")
 
     mapper = Eve2CMLmapper().load(args.mapper)
-    labs: List[Lab] = []
+    labs: list[Lab] = []
     for arg in args.file_or_zip:
         labs.extend(convert_files(arg, mapper))
 
