@@ -1,10 +1,10 @@
 import logging
 import re
 from functools import cached_property
-from typing import Any
+from typing import Any, Optional
 from xml.etree.ElementTree import Element
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 
 from .decode import decode_data
 
@@ -34,7 +34,7 @@ def rgb_to_hex(rgb_string):
         for value in values:
             if value < 0 or value > 255:
                 raise ValueError
-        return f'#{"".join([f"{int(v):02x}" for v in values])}'.upper()
+        return f"#{''.join([f'{int(v):02x}' for v in values])}".upper()
     raise ValueError
 
 
@@ -59,8 +59,8 @@ class TextObject:
         self.id = id
         self.name = name
         self.obj_type = obj_type
-        self._data = None
-        self._div = None
+        self._data: Optional[BeautifulSoup] = None
+        self._div: Optional[ResultSet[Any]] = None
         self._div_style = None
         if data:
             self.data = data
